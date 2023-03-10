@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  server:
+    build:
+      context: server
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./server/app:/code/app
+
+  client:
+    build:
+      context: client
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - "./client:/app"
+      - "/app/node_modules"
+
+
+
