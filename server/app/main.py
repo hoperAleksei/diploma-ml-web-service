@@ -1,20 +1,16 @@
 from typing import Union
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs",
+              redoc_url="/api/redoc",
+              openapi_url="/api/openapi.json")
 
-
-@app.get("/")
+@app.get("/api/")
 def read_root():
     return {"Hello": "world"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
 if __name__ == '__main__':
-    uvicorn.run("main:app", host='0.0.0.0', port=80, reload=True)
+    uvicorn.run("main:app", host='0.0.0.0', port=8000, reload=True)

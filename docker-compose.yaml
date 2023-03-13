@@ -5,17 +5,25 @@ services:
     build:
       context: server
       dockerfile: docker/Dockerfile
-    ports:
-      - "8000:80"
+#    ports:
+#      - "8000:8000"
+    expose:
+      - 8000
     volumes:
-      - ./server/app:/code/app
+      - "./server/app:/code/app"
+      - "./server/migrations:/code/migrations"
+      - "./server/alembic.ini:/code/alembic.ini"
+    depends_on:
+      - db
 
   client:
     build:
       context: client
       dockerfile: docker/Dockerfile
-    ports:
-      - "8080:8080"
+#    ports:
+#      - "8080:8080"
+    expose:
+      - 8001
     stdin_open: true
     tty: true
     environment:
@@ -23,6 +31,40 @@ services:
     volumes:
       - "./client:/app"
       - "/app/node_modules"
+      - "dist:/app/dist"
 
 
+  proxy:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8010:80"
+    environment:
+      - NGINX_HOST=_
+      - NGINX_PORT=80
+    depends_on:
+      - server
+      - client
 
+  db:
+    image: postgres
+#    ports:
+#      - "5432:5432"
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test_db
+    volumes:
+      - "db_data:/var/lib/postgresql/data"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  dist: {}
+  db_data: {}

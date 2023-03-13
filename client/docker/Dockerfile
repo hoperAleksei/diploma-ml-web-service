@@ -16,6 +16,6 @@ COPY . /app
 
 #ENV NODE_ENV=development
 
-#RUN npm run build
+#CMD ["npm", "run", "build"]
 
 CMD ["npm", "run", "serve"]
