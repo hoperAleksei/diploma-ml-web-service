@@ -1,15 +1,21 @@
-from typing import Union
-
 import uvicorn
-from fastapi import FastAPI, APIRouter
+
+from fastapi import FastAPI
+
+from auth.router import router as auth_router
+
 
 app = FastAPI(docs_url="/api/docs",
               redoc_url="/api/redoc",
               openapi_url="/api/openapi.json")
 
-@app.get("/api/")
+app.include_router(auth_router)
+
+import sys
+
+@app.get("/api/test")
 def read_root():
-    return {"Hello": "world"}
+    return sys.path
 
 
 if __name__ == '__main__':

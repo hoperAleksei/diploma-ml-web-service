@@ -2,5 +2,13 @@ fastapi
 pydantic
 uvicorn
 sqlalchemy
+asyncpg
 alembic
 psycopg2
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+numpy
+pandas
+scikit-learn
