@@ -1,6 +1,9 @@
 import uvicorn
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import ValidationError
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 from auth.router import router as auth_router
 
@@ -11,11 +14,17 @@ app = FastAPI(docs_url="/api/docs",
 
 app.include_router(auth_router)
 
-import sys
+@app.exception_handler(ValidationError)
+async def validation_exception_handler(request: Request, exc: ValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder({"detail": exc.errors()}),
+    )
+
 
 @app.get("/api/test")
 def read_root():
-    return sys.path
+    return "hello"
 
 
 if __name__ == '__main__':

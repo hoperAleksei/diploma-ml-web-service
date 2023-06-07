@@ -7,8 +7,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from .schemas import TokenData, User, UserInDB
+from .users import get_user, add_user
 
 from config import SECRET_KEY
+
+
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -35,19 +38,24 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
-
-
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
-    if not user:
+async def authenticate_user(username: str, password: str):
+    user = await get_user(username)
+    if user is None:
         return False
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
+async def register_user(username: str, password: str):
+    user = UserInDB(
+        username = username,
+        hashed_password = get_password_hash(password),
+        role = "user"
+    )
+
+    state = await add_user(user)
+
+    return state
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -75,15 +83,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = await get_user(username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
-
-
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
