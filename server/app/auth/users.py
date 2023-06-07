@@ -35,5 +35,5 @@ async def add_user(user_in_db: UserInDB) -> bool:
             await session.commit()
             return True
         except IntegrityError as e:
-            "username already in use"
+            # username already in use
             return False

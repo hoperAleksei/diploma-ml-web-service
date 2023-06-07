@@ -1,18 +1,22 @@
 import uvicorn
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, Depends
 from fastapi.exceptions import ValidationError
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
 from auth.router import router as auth_router
-
+from datasets.router import router as datasets_router
+from preprec.router import router as preprec_router
 
 app = FastAPI(docs_url="/api/docs",
               redoc_url="/api/redoc",
               openapi_url="/api/openapi.json")
 
 app.include_router(auth_router)
+app.include_router(datasets_router)
+app.include_router(preprec_router)
+
 
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request: Request, exc: ValidationError):
@@ -22,9 +26,13 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
     )
 
 
-@app.get("/api/test")
-def read_root():
-    return "hello"
+import external
+
+from datasets.dataset import save_dataset
+
+@app.post("/api/test")
+async def read_root(file = Depends(save_dataset)):
+    return 1
 
 
 if __name__ == '__main__':
