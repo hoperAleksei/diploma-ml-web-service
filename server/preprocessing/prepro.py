@@ -1,10 +1,8 @@
 from pandas import DataFrame
-
-
-
+from preprocessing import preprocessing_functions as pf
 PRE_TYPES = [{
     "type": "op",
-    "name": "обработка пропусков",
+    "name": "Обработка пропусков",
     "methods": [
         {"name": "Удаление строк", "nm": "DelNanRow"},
         {"name": "Удаление столбцов", "nm":"DelNanColumn"},
@@ -45,6 +43,53 @@ PRE_TYPES = [{
 }
 ]
 
+
+
 def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
-    return (data_set, pre_types)
-    # raise NotImplemented
+    data_set = data_set.dropna()
+    data_set.reset_index(inplace=True)
+    pf.convert_types(data_set)
+    if "de" in pre_types.keys():
+        data_set = pf.del_columns(data_set, pre_types["de"])
+    if "op" in pre_types.keys():
+        if ("DelNanRow" == pre_types["op"]):
+            data_set = pf.DelNanRow(data_set)
+        if ("DelNanColumn" == pre_types["op"]):
+            data_set = pf.DelNanColumn(data_set)
+        if ("AvgReplaseData" == pre_types["op"]):
+            data_set = pf.AvgReplaseData(data_set)
+        if ("MedianReplaseData" == pre_types["op"]):
+            data_set = pf.MedianReplaseData(data_set)
+    if "ec" in pre_types.keys():
+        if ("AttributeLabelEncoder" == pre_types["ec"]):
+            pf.AttributeLabelEncoder(data_set)
+        if ("AttributeOneHotEncoder" == pre_types["ec"]):
+            pf.AttributeOneHotEncoder(data_set)
+        if ("AttributeBinaryEncoder" == pre_types["ec"]):
+            pf.AttributeBinaryEncoder(data_set)
+    if "nd" in pre_types.keys():
+        if ("NormalizeAttributes" == pre_types["nd"]):
+            pf.NormalizeAttributes(data_set, pre_types["label"])
+        if ("MinMaxNormalizeAttributes" == pre_types["nd"]):
+            pf.MinMaxNormalizeAttributes(data_set, pre_types["label"])
+        if ("ZScoreNormalizeAttributes" == pre_types["nd"]):
+            pf.ZScoreNormalizeAttributes(data_set, pre_types["label"])
+        if ("MaxAbsoluteScalingNormalizeAttributes" == pre_types["nd"]):
+            pf.MaxAbsoluteScalingNormalizeAttributes(data_set, pre_types["label"])
+    if "ov" in pre_types.keys() and "op" in pre_types.keys():
+        if ("IQR" == pre_types["ov"]):
+            pf.IQR(data_set)
+        if ("StandardDeviations" == pre_types["ov"]):
+            pf.StandardDeviations(data_set)
+        if ("DelNanRow" == pre_types["op"]):
+            data_set = pf.DelNanRow(data_set)
+        if ("DelNanColumn" == pre_types["op"]):
+            data_set = pf.DelNanColumn(data_set)
+        if ("AvgReplaseData" == pre_types["op"]):
+            data_set = pf.AvgReplaseData(data_set)
+        if ("MedianReplaseData" == pre_types["op"]):
+            data_set = pf.MedianReplaseData(data_set)
+    if "sa" in pre_types.keys() and "op" in pre_types.keys() and "ec" in pre_types.keys():
+        if ("Corelation" == pre_types["sa"]):
+            data_set = pf.Corelation(data_set, pre_types["label"], pre_types["count"])
+    return data_set

@@ -1,5 +1,5 @@
 from external import preprocessing
-
+from pandas import DataFrame
 import external
 
 PRE_TYPES = external.preprocessing.PRE_TYPES
@@ -12,5 +12,6 @@ from auth.schemas import User
 
 import globals
 
-async def prepr(user: User, methods: dict):
-    return preproc(globals.datasets[globals.users[user.username]["dataset"]], methods)
+def prepr(user: User, methods: dict) -> DataFrame:
+    d = globals.datasets[globals.users[user.username]["dataset"]]
+    return preproc(d, methods)
