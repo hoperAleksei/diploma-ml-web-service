@@ -1,10 +1,34 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <nav v-if="getAuth">
+    <router-link to="/">Создать</router-link>
+    |
+    <router-link to="/profile">Профиль</router-link>
+    |
+    <button @click="btnLogout">Выйти</button>
   </nav>
+
   <router-view/>
 </template>
+<script>
+import {mapGetters} from 'vuex'
+import {getAuth, logout} from "@/hooks/auth";
+import router from "@/router";
+
+export default {
+  computed: {
+    ...mapGetters({
+      getAuth: "getAuth"
+    })
+  },
+  methods: {
+    btnLogout() {
+      logout()
+      router.push('/')
+    }
+  }
+}
+</script>
+
 
 <style>
 #app {

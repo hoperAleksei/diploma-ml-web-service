@@ -1,25 +1,71 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import {createRouter, createWebHistory} from 'vue-router'
+import LoginView from "@/views/LoginView.vue";
+import ProfileView from "@/views/ProfileView.vue";
+import store from "@/store";
+import NotFoundView from "@/views/NotFoundView.vue";
+import CreateView from "@/views/CreateView.vue";
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    {
+        path: '/',
+        name: 'create',
+        component: CreateView,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: LoginView
+    },
+    {
+        path: '/profile',
+        name: 'profile',
+        component: ProfileView,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'notFound',
+        component: NotFoundView
+
+    }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+    history: createWebHistory(process.env.BASE_URL),
+    routes
 })
+
+// router.beforeEach((to, _, next) => {
+//     if (to.name == 'login') {
+//         if (store.getters.getAuth) {
+//             next('/profile');
+//             return;
+//         }
+//         else {
+//             next();
+//         }
+//     }
+// })
+
+router.beforeEach((to, _, next) => {
+    if (to.name == 'login' && store.getters.getAuth) {
+            next('/profile');
+            return;
+    }
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (store.getters.getAuth) {
+            next();
+            return;
+        }
+        next('/login');
+    } else {
+        next();
+    }
+});
 
 export default router

@@ -13,3 +13,6 @@ numpy
 pandas
 scikit-learn
 aiofiles
+category_encoders
+seaborn
+matplotlib
