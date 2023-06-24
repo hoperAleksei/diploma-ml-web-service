@@ -6,7 +6,7 @@ async function getMe() {
     let res = await fetch(API_BASE + 'auth/users/me', {
         method: 'GET',
         headers: {
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + store.getters.getToken
         }
     })
     return await res.json()
@@ -26,9 +26,9 @@ async function getAuth(username, password) {
         })
 
         if (res.ok) {
-            let me = await getMe
             store.commit('setToken', (await res.json()).access_token)
             store.commit('setAuth', true)
+            let me = await getMe()
             store.commit('setUsername', me.username)
             store.commit('setRole', me.role)
             return true
@@ -60,11 +60,13 @@ async function getReg(username, password) {
         if (res.ok) {
             store.commit('setToken', (await res.json()).access_token)
             store.commit('setAuth', true)
+            let me = await getMe()
+            store.commit('setUsername', me.username)
+            store.commit('setRole', me.role)
             return true
         } else {
             return false
         }
-
     } catch (e) {
         console.log(e)
         return false
@@ -77,7 +79,8 @@ async function getReg(username, password) {
 function logout() {
     store.commit('setToken', '')
     store.commit('setAuth', false)
-    console.log('logout')
+    store.commit('setUsername', '')
+    store.commit('setRole', '')
 }
 
 export {

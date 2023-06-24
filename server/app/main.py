@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, status, Depends
 from fastapi.exceptions import ValidationError
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from starlette.middleware.cors import CORSMiddleware
 
 from auth.router import router as auth_router
 from datasets.router import router as datasets_router
@@ -17,6 +18,17 @@ app.include_router(auth_router)
 app.include_router(datasets_router)
 app.include_router(preprec_router)
 
+origins = [
+    "http://localhost",
+]
+
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["172.21.0.6", "http://localhost/login"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request: Request, exc: ValidationError):
@@ -24,15 +36,6 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": exc.errors()}),
     )
-
-
-import external
-
-from datasets.dataset import save_dataset
-
-@app.post("/api/test")
-async def read_root(file = Depends(save_dataset)):
-    return 1
 
 
 if __name__ == '__main__':

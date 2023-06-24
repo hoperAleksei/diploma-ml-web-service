@@ -41,7 +41,7 @@ async def read_users_me(
     return current_user
 
 
-@router.post("/register/")
+@router.post("/register")
 async def register(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):

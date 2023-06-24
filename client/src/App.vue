@@ -2,7 +2,9 @@
   <nav v-if="getAuth">
     <router-link to="/">Создать</router-link>
     |
-    <router-link to="/profile">Профиль</router-link>
+    <router-link v-if="isAdmin" to="/admin">Администрирование</router-link>
+    |
+    <router-link to="/profile"> {{ getUsername }} </router-link>
     |
     <button @click="btnLogout">Выйти</button>
   </nav>
@@ -17,7 +19,9 @@ import router from "@/router";
 export default {
   computed: {
     ...mapGetters({
-      getAuth: "getAuth"
+      getAuth: 'getAuth',
+      getUsername: 'getUsername',
+      isAdmin: 'isAdmin'
     })
   },
   methods: {

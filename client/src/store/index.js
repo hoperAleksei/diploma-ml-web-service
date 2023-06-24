@@ -11,6 +11,15 @@ export default createStore({
     getters: {
         getAuth(state) {
             return state.isAuth
+        },
+        getUsername(state) {
+            return state.username
+        },
+        isAdmin(state) {
+            return state.role === 'admin'
+        },
+        getToken(state) {
+            return state.token
         }
     },
     mutations: {
