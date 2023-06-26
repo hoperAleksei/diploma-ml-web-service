@@ -1,11 +1,13 @@
-import sqlalchemy
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi import File, UploadFile
+from typing import List
+
+from fastapi import APIRouter, Depends
+from fastapi import UploadFile
 
 from auth.schemas import User
 from auth.security import get_current_user
+from state_manager.schemas import UserState
+
 from .dataset import save_dataset, get_datasets, load_dataset
-from typing import List
 from .schemas import Dataset
 
 import globals
@@ -33,7 +35,7 @@ async def upload_dataset_from_url(
     raise NotImplementedError
 
 
-@router.get("/get_datasets") # , response_model=List[Dataset]
+@router.get("/get_datasets", response_model=List[Dataset]) # , response_model=List[Dataset]
 async def get_datasets_from_db(
         current_user: User = Depends(get_current_user)
 ):
@@ -42,12 +44,17 @@ async def get_datasets_from_db(
 
 @router.get("/use_dataset")
 async def use_dataset(
-        dataset_name: str,
+        dataset_id: int,
         current_user: User = Depends(get_current_user)
 ):
-    if dataset_name not in globals.datasets:
-        globals.datasets[dataset_name] = await load_dataset(dataset_name)
-    if current_user.username not in globals.users:
-        globals.users[current_user.username] = {"dataset": dataset_name}
+    if dataset_id not in globals.datasets:
+        dataset = await load_dataset(dataset_id)
+        globals.datasets[dataset_id] = dataset
     else:
-        globals.users[current_user.username]["dataset"] = dataset_name
+        dataset = globals.datasets[dataset_id]
+
+    if current_user.username not in globals.state:
+        globals.state[current_user.username] = UserState(dataset_id=dataset_id, dataset=dataset.copy())
+    else:
+        globals.state[current_user.username].dataset_id = dataset_id
+    return {"status": "ok"}

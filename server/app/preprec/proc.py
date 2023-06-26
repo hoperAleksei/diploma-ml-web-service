@@ -13,5 +13,5 @@ from auth.schemas import User
 import globals
 
 def prepr(user: User, methods: dict) -> DataFrame:
-    d = globals.datasets[globals.users[user.username]["dataset"]]
+    d = globals.datasets[globals.state[user.username]["dataset"]]
     return preproc(d, methods)

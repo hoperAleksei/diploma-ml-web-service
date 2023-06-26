@@ -9,6 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from auth.router import router as auth_router
 from datasets.router import router as datasets_router
 from preprec.router import router as preprec_router
+from state_manager.router import router as sm_router
 
 app = FastAPI(docs_url="/api/docs",
               redoc_url="/api/redoc",
@@ -17,6 +18,7 @@ app = FastAPI(docs_url="/api/docs",
 app.include_router(auth_router)
 app.include_router(datasets_router)
 app.include_router(preprec_router)
+app.include_router(sm_router)
 
 origins = [
     "http://localhost",
@@ -36,7 +38,6 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": exc.errors()}),
     )
-
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host='0.0.0.0', port=8000, reload=True)

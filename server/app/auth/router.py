@@ -16,9 +16,11 @@ router = APIRouter(
     tags=["Auth"]
 )
 
+auth_form = Annotated[OAuth2PasswordRequestForm, Depends()]
+
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    form_data: auth_form
 ):
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -41,9 +43,9 @@ async def read_users_me(
     return current_user
 
 
-@router.post("/register")
+@router.post("/register", response_model=Token)
 async def register(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    form_data: auth_form
 ):
     state = await register_user(form_data.username, form_data.password)
     if state:
