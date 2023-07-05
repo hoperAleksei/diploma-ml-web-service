@@ -4,6 +4,7 @@ import ProfileView from "@/views/ProfileView.vue";
 import store from "@/store";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CreateView from "@/views/CreateView.vue";
+import Lologo from "@/views/Lologo.vue";
 
 const routes = [
     {
@@ -53,12 +54,12 @@ const router = createRouter({
 // })
 
 router.beforeEach((to, _, next) => {
-    if (to.name == 'login' && store.getters.getAuth) {
+    if (to.name == 'login' && store.state.isAuth) {
             next('/profile');
             return;
     }
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (store.getters.getAuth) {
+        if (store.state.isAuth) {
             next();
             return;
         }

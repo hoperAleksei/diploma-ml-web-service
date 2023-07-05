@@ -10,10 +10,12 @@
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
+    "vuetify": "^3.3.5",
     "vuex": "^4.0.0",
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "@mdi/font": "^7.2.96",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",

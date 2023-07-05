@@ -2,15 +2,15 @@
   <div>
     <input v-model="username" placeholder="username">
     <input v-model="password" placeholder="password">
-    <button @click="auth">login</button>
+    <button @click="login">login</button>
     <button @click="register">register</button>
 
   </div>
 </template>
 
 <script>
-import {getAuth, getReg} from '@/hooks/auth'
 import router from "@/router";
+import store from "@/store";
 
 export default {
   name: "LoginView",
@@ -21,12 +21,12 @@ export default {
     }
   },
   methods: {
-    async auth(event) {
-      await getAuth(this.username, this.password)
+    async login(event) {
+      await store.dispatch('login', {username: this.username, password: this.password})
       router.push('/profile')
     },
     async register(event) {
-      await getReg(this.username, this.password)
+      await store.dispatch('register', {username: this.username, password: this.password})
       router.push('/profile')
     }
   }

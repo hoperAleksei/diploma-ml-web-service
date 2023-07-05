@@ -1,32 +1,38 @@
 <template>
-  <nav v-if="getAuth">
+  <nav v-if="isAuth">
     <router-link to="/">Создать</router-link>
     |
     <router-link v-if="isAdmin" to="/admin">Администрирование</router-link>
     |
-    <router-link to="/profile"> {{ getUsername }} </router-link>
+    <router-link to="/profile"> {{ getUsername }}</router-link>
     |
     <button @click="btnLogout">Выйти</button>
   </nav>
-
+  <!--  <LoginForm></LoginForm>-->
   <router-view/>
 </template>
 <script>
-import {mapGetters} from 'vuex'
-import {getAuth, logout} from "@/hooks/auth";
+import store from "@/store";
 import router from "@/router";
+import LoginForm from "@/components/LoginForm.vue";
 
 export default {
+  components: {LoginForm},
   computed: {
-    ...mapGetters({
-      getAuth: 'getAuth',
-      getUsername: 'getUsername',
-      isAdmin: 'isAdmin'
-    })
+    isAuth: () => {
+      return store.state.isAuth
+    },
+    isAdmin: () => {
+      return store.state.role === 'admin';
+    },
+    getUsername: () => {
+      return store.state.username
+    }
   },
   methods: {
+    store,
     btnLogout() {
-      logout()
+      store.dispatch('logout')
       router.push('/')
     }
   }
@@ -35,24 +41,5 @@ export default {
 
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>

@@ -1,5 +1,13 @@
 import {createStore} from 'vuex'
 import createPersistedState from "vuex-persistedstate";
+import {getMe, getAuth} from "@/api/auth";
+
+function setLogin(context, token, username, role) {
+    context.commit('setToken', token)
+    context.commit('setAuth', true)
+    context.commit('setUsername', username)
+    context.commit('setRole', role)
+}
 
 export default createStore({
     state: () => ({
@@ -8,20 +16,7 @@ export default createStore({
         role: '',
         token: ''
     }),
-    getters: {
-        getAuth(state) {
-            return state.isAuth
-        },
-        getUsername(state) {
-            return state.username
-        },
-        isAdmin(state) {
-            return state.role === 'admin'
-        },
-        getToken(state) {
-            return state.token
-        }
-    },
+    getters: {},
     mutations: {
         setAuth(state, isAuth) {
             state.isAuth = isAuth
@@ -37,17 +32,30 @@ export default createStore({
         }
     },
     actions: {
-        // auth({state, commit}) {
-        //     try {
-        //         const res = GetAuth()
-        //     }
-        //     catch (e) {
-        //         console.log(e)
-        //     }
-        //     finally {
-        //
-        //     }
-        // }
+        logout(context) {
+            context.commit('setToken', '')
+            context.commit('setAuth', false)
+            context.commit('setUsername', '')
+            context.commit('setRole', '')
+        },
+        async login(context, {username, password}) {
+            let res = await getAuth('login', username, password)
+            if (res.status === true) {
+                let user = await getMe(res.token)
+                setLogin(context, res.token, user.username, user.role)
+            } else {
+                throw ''
+            }
+        },
+        async register(context, {username, password}) {
+            let res = await getAuth('register', username, password)
+            if (res.status === true) {
+                let user = await getMe(res.token)
+                setLogin(context, res.token, user.username, user.role)
+            } else {
+                throw ''
+            }
+        },
     },
     // modules: {},
     plugins: [createPersistedState()]
