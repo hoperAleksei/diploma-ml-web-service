@@ -14,7 +14,8 @@ export default createStore({
         isAuth: false,
         username: '',
         role: '',
-        token: ''
+        token: '',
+        state: 'start',
     }),
     getters: {},
     mutations: {
