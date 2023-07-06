@@ -22,7 +22,6 @@ async function getAuth(method='login', username, password) {
         default:
             throw 'not support method'
     }
-    console.log(username, password)
     try {
         let res = await fetch(auth_url, {
             method: 'POST',

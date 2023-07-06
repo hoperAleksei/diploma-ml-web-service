@@ -4,7 +4,7 @@ import ProfileView from "@/views/ProfileView.vue";
 import store from "@/store";
 import NotFoundView from "@/views/NotFoundView.vue";
 import CreateView from "@/views/CreateView.vue";
-import Lologo from "@/views/Lologo.vue";
+import AdminView from "@/views/AdminView.vue";
 
 const routes = [
     {
@@ -29,9 +29,20 @@ const routes = [
         }
     },
     {
+        path: '/admin',
+        name: 'admin',
+        component: AdminView,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: 'notFound',
-        component: NotFoundView
+        component: NotFoundView,
+        meta: {
+            requiresAuth: true
+        }
 
     }
 ]
@@ -41,22 +52,10 @@ const router = createRouter({
     routes
 })
 
-// router.beforeEach((to, _, next) => {
-//     if (to.name == 'login') {
-//         if (store.getters.getAuth) {
-//             next('/profile');
-//             return;
-//         }
-//         else {
-//             next();
-//         }
-//     }
-// })
-
 router.beforeEach((to, _, next) => {
-    if (to.name == 'login' && store.state.isAuth) {
-            next('/profile');
-            return;
+    if (to.name === 'login' && store.state.isAuth) {
+        next('/profile');
+        return;
     }
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (store.state.isAuth) {

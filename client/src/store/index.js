@@ -44,7 +44,7 @@ export default createStore({
                 let user = await getMe(res.token)
                 setLogin(context, res.token, user.username, user.role)
             } else {
-                throw ''
+                throw new Error('Invalid user or password')
             }
         },
         async register(context, {username, password}) {
@@ -53,7 +53,7 @@ export default createStore({
                 let user = await getMe(res.token)
                 setLogin(context, res.token, user.username, user.role)
             } else {
-                throw ''
+                throw new Error('Invalid user or password')
             }
         },
     },
