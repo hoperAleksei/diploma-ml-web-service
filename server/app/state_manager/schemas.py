@@ -5,10 +5,10 @@ from enum import Enum
 from pandas import DataFrame
 
 class State(Enum):
-    ready = "ready"
-    prepro = "prepro"
-    split = "split"
-    autofit = "autofit"
+    ready = "ready" # до загрузки выборки
+    prepro = "prepro" # на экране предобработки
+    split = "split" # на экране разбиения
+    autofit = "autofit" # на экране выбора алгоритмов
 
 class Prepro(BaseModel):
     pass
@@ -20,11 +20,12 @@ class Autofit(BaseModel):
     pass
 
 class UserState(BaseModel):
-    state: State = State.ready
-    dataset_id: int
-    dataset: DataFrame | None = None
-    splits: List[Split] = []
-    autofit: List[Autofit] = []
+    state: State = State.ready # состояние эксперимента
+    name: str | None = None # название эксперимента
+    dataset_id: int # идентификатор выборки
+    dataset: DataFrame | None = None # предобработанная выборка
+    splits: List[Split] = [] # разбиения
+    autofit: List[Autofit] = [] # алгоритмы и их настройки
 
     class Config:
         arbitrary_types_allowed = True
