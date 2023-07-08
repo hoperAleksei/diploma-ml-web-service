@@ -1,7 +1,7 @@
 from sklearn.metrics import accuracy_score, precision_score, recall_score, auc, roc_curve, f1_score
 from itertools import product
 import random
-import loader
+from .loader import get_load_algs_names, algs_loader, get_alg_by_name
 
 
 def experiment_grid(params, n_model=10):
@@ -199,11 +199,11 @@ def run_experiments(algs_and_params, x_train, y_train, x_test, y_test):
     out_list = []
 
     # подгружать алгоритмы
-    algs_list = loader.algs_loader('algs')
+    algs_list = algs_loader('algs')
 
     for i in algs_and_params:
-        if i['alg_name'] in loader.get_load_algs_names(algs_list):
-            alg = loader.get_alg_by_name(i['alg_name'], algs_list)
+        if i['alg_name'] in get_load_algs_names(algs_list):
+            alg = get_alg_by_name(i['alg_name'], algs_list)
 
             # генерация параметров
             params = experiment_grid(param_generator(i['params'], i['n_steps']))
