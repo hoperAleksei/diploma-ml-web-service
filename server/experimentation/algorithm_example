@@ -1,0 +1,38 @@
+import numpy as np
+import pandas as pd
+
+from algorithm import Algorithm
+# импорт библиотеки вашего алгоритма
+
+
+class """название класса добавленного алгоритма"""(""" класс вашего алгоритма """, Algorithm):
+    def __init__(self, """параметры алгоритма"""):
+        """ваш алгоритм""".__init__(self,
+                                    """передача параметров вашего алгоритма"""
+                                    )
+        Algorithm.__init__(self, ALGORITHM_NAME='ИМЯ АЛГОРИТМА',
+
+                           PRE_REQ=[Algorithm.PreReq."""требования к предобработке""",
+                                    Algorithm.PreReq."""требования к предобработке"""],
+
+                           INPUT_TYPES=[Algorithm.InputTypes."""требования к входным данным""",
+                                        Algorithm.InputTypes."""требования к входным данным""",
+                                        Algorithm.InputTypes."""требования к входным данным"""],
+
+                           PARAMS={ """ описание параметров в следующем шаблоне """
+                                'name_1': {
+                                            'type': 'int',                      # тип параметра (int, float, set)
+                                            'min': 1,                           # минимальное значение параметра
+                                            'max': 10                           # максимальное значение параметра | кол-во объектов - 'max_object_count'
+                                          },
+                                'name_2': {
+                                            'type': 'set',
+                                            'values': {'uniform', 'distance'}   # все значения множества
+                                          },
+                                'name_3': {
+                                            'type': 'float',
+                                            'min': -1.0,
+                                            'max': 1.0
+                                          }
+                           }
+                           )  # Инициализация твоего алгоритма
