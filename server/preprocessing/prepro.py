@@ -37,20 +37,29 @@ PRE_TYPES = [{
     "type": "sa",
     "name": "Отбор признаков",
     "methods": [
-        {"name": "Корреляция", "nm":"Corelation"},
+        {"name": "Корреляция", "nm":"Correlation"},
         {"name": "КсиКвадрат", "nm": "ChiSquare"}
     ]
+},{
+    "type": "de",
+    "name": "Удаление признака"
+},{
+    "type": "tn",
+    "name": "Замена значений на Nan"
 }
 ]
 
 
 
-def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
+def preproc(data_set: DataFrame, pre_types: dict):
+    res = [data_set]
     data_set = data_set.dropna()
     data_set.reset_index(inplace=True)
     pf.convert_types(data_set)
     if "de" in pre_types.keys():
         data_set = pf.del_columns(data_set, pre_types["de"])
+    if "tn" in pre_types.keys():
+        data_set = transform_value_to_nan(data_set, pre_types["tn"])
     if "op" in pre_types.keys():
         if ("DelNanRow" == pre_types["op"]):
             data_set = pf.DelNanRow(data_set)
@@ -65,6 +74,7 @@ def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
             pf.AttributeLabelEncoder(data_set)
         if ("AttributeOneHotEncoder" == pre_types["ec"]):
             pf.AttributeOneHotEncoder(data_set)
+            print(data_set)
         if ("AttributeBinaryEncoder" == pre_types["ec"]):
             pf.AttributeBinaryEncoder(data_set)
     if "nd" in pre_types.keys():
@@ -90,6 +100,6 @@ def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
         if ("MedianReplaseData" == pre_types["op"]):
             data_set = pf.MedianReplaseData(data_set)
     if "sa" in pre_types.keys() and "op" in pre_types.keys() and "ec" in pre_types.keys():
-        if ("Corelation" == pre_types["sa"]):
-            data_set = pf.Corelation(data_set, pre_types["label"], pre_types["count"])
+        if ("Correlation" == pre_types["sa"]):
+            data_set = pf.Correlation(data_set, pre_types["label"], pre_types["count"])
     return data_set

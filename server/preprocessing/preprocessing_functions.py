@@ -1,7 +1,9 @@
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn import preprocessing
-from sklearn.preprocessing import LabelEncoder
+from category_encoders.binary import BinaryEncoder
+import seaborn as sns
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
@@ -21,6 +23,12 @@ def del_columns(data, columns):
         x = x.drop([name], axis=1)
     return x
 
+def transform_value_to_nan(data, values):
+    x = data
+    for val in values:
+        x = x.replace(val, np.NaN)
+    return x
+
 #Encoding
 
 #функция кодирования категориальных признаков LabelEncoding
@@ -38,27 +46,32 @@ def AttributeOneHotEncoder(data):
       onehotencoder = OneHotEncoder()
       data_new = onehotencoder.fit_transform(data[[name]])
       data_new = pd.DataFrame(data_new.toarray(),
-      columns=onehotencoder.categories_)
+      columns=onehotencoder.categories_[0])
       data.drop(name, axis= 1 , inplace= True )
-      data = data.join(data_new)
+      #data[column] = data.join(data_new)
+      for column in onehotencoder.categories_[0]:
+        data[column] = data_new[column]
 
 
-from category_encoders.binary import BinaryEncoder
+
+
+
+
 #функция кодирования категориальных признаков BinaryEncoder
-from category_encoders.binary import BinaryEncoder
 def AttributeBinaryEncoder(data):
   for name, values in data.items():
     if (values.dtypes == 'O'):
       binaryencoder = BinaryEncoder()
       data_new = binaryencoder.fit_transform(data[[name]])
       data.drop(name, axis= 1 , inplace= True )
-      data = data.join(data_new)
+      print(list(data_new.columns)[0])
+      for column in list(data_new.columns):
+        data[column] = data_new[column]
 
 
 #Normalize
 
 #функция нормализации данных
-from sklearn.preprocessing import LabelEncoder
 def NormalizeAttributes(data, label_name):
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
@@ -67,7 +80,6 @@ def NormalizeAttributes(data, label_name):
       data[name] = normalized_attribute[0]
 
 #функция min-max нормализации данных
-from sklearn.preprocessing import LabelEncoder
 def MinMaxNormalizeAttributes(data, label_name):
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
@@ -110,7 +122,6 @@ def AvgReplaseData(data):
   return d
 
 #Функция замены на медиану и моду
-from sklearn.preprocessing import LabelEncoder
 def MedianReplaseData(data):
   d = data
   for name, values in d.items():
@@ -151,13 +162,10 @@ def StandardDeviations(data):
             data.loc[data[name] > upper_limit, name] = np.nan
 
 # Отбор признаков
-
-import seaborn as sns
-import matplotlib.pyplot as plt
 #Предварительно необходим encoding, работает только с числовыми значениями
 #Функция фильтрации на основе корреляции к label
 #Возвращает новый дф, на доработку
-def Corelation(data, label_name, attributeCount):
+def Correlation(data, label_name, attributeCount):
   correlation_matrix = data.corr()
   attributes = correlation_matrix[label_name].drop([label_name])
   attributes = attributes.abs().sort_values(ascending=False)
@@ -165,3 +173,9 @@ def Corelation(data, label_name, attributeCount):
   d = data[attributes.head(int(attributeCount)).index]
   d[label_name] = data[label_name]
   return d
+"""
+def CorrHotMap(data):
+    correlation_matrix = data.corr()
+    plt.figure(figsize = (10, 6))
+    return (sns.heatmap(correlation_matrix, annot = True))
+"""
