@@ -1,2 +1,2 @@
 from preprocessing.prepro import PRE_TYPES, preproc
-from split_function import sample_split
+from preprocessing.split_function import sample_split

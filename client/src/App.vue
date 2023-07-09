@@ -17,12 +17,13 @@
         <v-list-item :key="logout" title="Выйти" @click="logout"></v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app v-if="isAuth">
+    <v-toolbar app v-if="isAuth" color="orange">
       <v-app-bar-nav-icon class="d-flex d-sm-none" @click="sidebar = !sidebar"></v-app-bar-nav-icon>
       <v-toolbar-title>
         <router-link to="/">
-          Эксперименты
+          {{ mainName }}
         </router-link>
+        <v-btn v-if="mainName !== 'Эксперименты'" density="compact" icon="mdi-close" @click="cancelExp"></v-btn>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="d-none d-sm-flex">
@@ -68,6 +69,13 @@ export default {
     },
     username: () => {
       return store.state.username
+    },
+    mainName: () => {
+      if (store.state.expName === '') {
+        return 'Эксперименты'
+      } else {
+        return store.state.expName
+      }
     }
   },
   data() {
@@ -79,8 +87,15 @@ export default {
     logout: () => {
       store.dispatch('logout')
       router.push('/login')
+    },
+    cancelExp: async () => {
+      let res = await store.dispatch('cancelExp')
+      if (res) {
+        router.push('/')
+      }
     }
   },
+
 }
 </script>
 

@@ -1,4 +1,10 @@
 import os
+import urllib
+
+import sqlalchemy
+import wget
+import tempfile
+
 import aiofiles
 
 from fastapi import UploadFile
@@ -8,18 +14,24 @@ from sqlalchemy import insert, select
 
 from database import async_session_maker
 from .models import dataset
+from .schemas import SampleTable
 
 import pandas
 
 DATASETS_PATH = os.path.join(os.path.abspath("."), "datasets")
+SAMPLE_COUNT = 10
 
 async def create_dataset(name: str):
     stmt = insert(dataset).values(
-        name = name
+        name=name
     )
     async with async_session_maker() as session:
         await session.execute(stmt)
-        await session.commit()
+        try:
+            await session.commit()
+        except Exception as e:
+            raise HTTPException(409, detail="file already exist")
+
 
 async def is_exist_dataset(dataset_id: int):
     query = select(dataset).where(dataset.c.id == dataset_id)
@@ -30,23 +42,39 @@ async def is_exist_dataset(dataset_id: int):
     else:
         return True
 
-async def save_dataset(file: UploadFile):
-    # проверка на наличие директории с выборками
-    if not (os.path.exists(DATASETS_PATH) and os.path.isdir(DATASETS_PATH)):
-        os.mkdir(DATASETS_PATH)
 
+async def save_url(url: str):
     try:
-        pandas.read_csv(file.file)
-    except:
-        raise HTTPException(409, detail="file is not dataset")
-    file.file.seek(0)
-    if os.path.exists(os.path.join(DATASETS_PATH, file.filename)):
-        raise HTTPException(409, detail="file already exist")
-    else:
-        async with aiofiles.open(os.path.join(DATASETS_PATH, file.filename), "wb") as out:
-            inp = await file.read()
-            await out.write(inp)
-        await create_dataset(file.filename)
+        filename = wget.filename_from_url(url)
+        file = urllib.request.urlopen(url)
+    except Exception as e:
+        raise HTTPException(404, detail="file not found")
+    await save_dataset(UploadFile(file, filename=filename))
+
+
+async def save_dataset(file: UploadFile):
+    # print({"file": file.file, "m": file.filename})
+    filename = file.filename
+    with tempfile.TemporaryFile() as f:
+        f.write(file.file.read())
+        f.seek(0)
+        # проверка на наличие директории с выборками
+        if not (os.path.exists(DATASETS_PATH) and os.path.isdir(DATASETS_PATH)):
+            os.mkdir(DATASETS_PATH)
+
+        try:
+            pandas.read_csv(f)
+        except:
+            raise HTTPException(409, detail="file is not dataset")
+        f.seek(0)
+        if os.path.exists(os.path.join(DATASETS_PATH, filename)):
+            raise HTTPException(409, detail="file already exist")
+        else:
+            async with aiofiles.open(os.path.join(DATASETS_PATH, filename), "wb") as out:
+                inp = f.read()
+                await out.write(inp)
+            await create_dataset(filename)
+
 
 async def get_datasets():
     query = select(dataset)
@@ -54,11 +82,13 @@ async def get_datasets():
         result = await session.execute(query)
     return result.all()
 
+
 async def get_dataset_name(dataset_id: int):
     query = select(dataset.c.name).where(dataset.c.id == dataset_id)
     async with async_session_maker() as session:
         result = await session.execute(query)
     return result.first()[0]
+
 
 async def load_dataset(dataset_id: int) -> pandas.DataFrame | None:
     ied = await is_exist_dataset(dataset_id)
@@ -69,3 +99,21 @@ async def load_dataset(dataset_id: int) -> pandas.DataFrame | None:
             return pandas.read_csv(dataset_path)
     else:
         raise HTTPException(404, detail="dataset not found")
+
+async def get_ds_table(dataset: pandas.DataFrame) -> SampleTable:
+    sample = dataset.sample(SAMPLE_COUNT, random_state=0).to_dict()
+    print()
+    print(sample)
+    a = [el for el in sample.values()]
+    print(a)
+    print([[list(el.values())[i] for el in a] for i in range(SAMPLE_COUNT)])
+    # print([[list(el.values())[i] for el in sample.values()] for i in range(SAMPLE_COUNT)])
+    ret = {"names": list(sample.keys()), "types": [str(i) for i in dataset.dtypes.values],
+           "lines": [[list(el.values())[i] for el in a] for i in range(SAMPLE_COUNT)]}
+    print(ret)
+    r = SampleTable(
+        names=list(sample.keys()),
+        types=[str(i) for i in dataset.dtypes.values],
+        lines=[[list(el.values())[i] for el in a] for i in range(SAMPLE_COUNT)]
+    )
+    return r
