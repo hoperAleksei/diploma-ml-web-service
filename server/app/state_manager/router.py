@@ -32,6 +32,7 @@ async def start_experiment(experiment: Experiment, user: User = Depends(get_curr
             status_code=409,
             detail="User already start experiment"
         )
+    return {"status": "ok"}
 
 @router.delete("/experiment")
 async def cancel_experiment(user: User = Depends(get_current_user)):
