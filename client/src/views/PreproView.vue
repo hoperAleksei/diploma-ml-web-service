@@ -1,12 +1,13 @@
 <template>
-  <div>
-
-  </div>
+  <table-ds></table-ds>
 </template>
 
 <script>
+import TableDs from "@/components/TableDs.vue";
+
 export default {
-name: 'PreproView',
+  name: 'PreproView',
+  components: {TableDs},
   data: () => ({}),
   methods: {}
 }
