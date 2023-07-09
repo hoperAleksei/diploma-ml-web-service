@@ -8,6 +8,9 @@ import pandas as pd
 import numpy as np
 
 def convert_types(data: pd.DataFrame):
+    """
+    :param data: Датафрейм
+    """
     for name, values in data.items():
         if (values.dtypes == 'int64'):
             data[name] = data[name].astype('float64')
@@ -18,21 +21,34 @@ def convert_types(data: pd.DataFrame):
                 print(f"{name}: fail convert to float64")
 
 def del_columns(data: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :param columns: лист строк, содержащих название столбцов
+    :return: Датафрейм без выбранных столбцов
+    """
     x = data
     for name in columns:
         x = x.drop([name], axis=1)
     return x
 
-def transform_value_to_nan(data: pd.DataFrame, values: str) -> pd.DataFrame:
+def transform_value_to_nan(data: pd.DataFrame, values: list[str]) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :param values: список строк для замены
+    :return: Датафрейм с заменой значений на NaN
+    """
     x = data
     for val in values:
         x = x.replace(val, np.NaN)
     return x
 
 #Encoding
-
 #функция кодирования категориальных признаков LabelEncoding
 def OneAttributeLabelEncoder(data: pd.Series) -> pd.DataFrame:
+    """
+    :param data: Сериес
+    :return: Сериес с заменой object на float
+    """
     if (data.dtypes == 'O'):
       labelencoder = LabelEncoder()
       return (labelencoder.fit_transform(data))
@@ -42,6 +58,10 @@ def OneAttributeLabelEncoder(data: pd.Series) -> pd.DataFrame:
 
 #функция кодирования категориальных признаков LabelEncoding
 def AttributeLabelEncoder(data: pd.DataFrame):
+    """
+    :param data: Датафрейм
+    :return: Датафрейм с заменой object на float
+    """
   for name, values in data.items():
     if (values.dtypes == 'O'):
       labelencoder = LabelEncoder()
@@ -49,6 +69,10 @@ def AttributeLabelEncoder(data: pd.DataFrame):
 
 #функция кодирования категориальных признаков One-HoteEncoding
 def AttributeOneHotEncoder(data: pd.DataFrame):
+    """
+    :param data: Датафрейм
+    :return: Датафрейм с заменой object на float
+    """
   for name, values in data.items():
     if (values.dtypes == 'O'):
       onehotencoder = OneHotEncoder()
@@ -62,6 +86,10 @@ def AttributeOneHotEncoder(data: pd.DataFrame):
 
 #функция кодирования категориальных признаков BinaryEncoder
 def AttributeBinaryEncoder(data: pd.DataFrame):
+    """
+    :param data: Датафрейм
+    :return: Датафрейм с заменой object на float
+    """
   d = data
   for name, values in data.items():
     if (values.dtypes == 'O'):
@@ -76,6 +104,11 @@ def AttributeBinaryEncoder(data: pd.DataFrame):
 
 #функция нормализации данных
 def NormalizeAttributes(data: pd.DataFrame, label_name: str):
+    """
+    :param data: Датафрейм
+    :param label_name: Название метки
+    :return: Датафрейм с значениями в едином размере
+    """
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       value_array = np.array(data[name])
@@ -84,6 +117,10 @@ def NormalizeAttributes(data: pd.DataFrame, label_name: str):
 
 #функция min-max нормализации данных
 def MinMaxNormalizeAttributes(data: pd.DataFrame, label_name: str):
+    """
+    :param data: Датафрейм
+    :param label_name: Название метки
+    """
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       value_array = np.array(data[name])
@@ -92,28 +129,48 @@ def MinMaxNormalizeAttributes(data: pd.DataFrame, label_name: str):
       data[name] = np.transpose(normalized_attribute)[0]
 
 def ZScoreNormalizeAttributes(data: pd.DataFrame, label_name: str):
+    """
+    :param data: Датафрейм
+    :param label_name: Название метки
+    """
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       data[name] = (data[name] - data[name].mean()) / data[name].std()
 
 def MaxAbsoluteScalingNormalizeAttributes(data: pd.DataFrame, label_name: str):
+    """
+    :param data: Датафрейм
+    :param label_name: Название метки
+    """
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       data[name] = data[name] / data[name].abs().max()
 
 # Обработка пропусков
 def DelNanRow(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :return: Датафрейм без NaN
+    """
   d = data.dropna()
   d.reset_index(drop=True)
   return d
 
 def DelNanColumn(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :return: Датафрейм без NaN
+    """
   d = data.dropna(axis=1)
   d.reset_index(drop=True)
   return d
 
 #Функция замены на среднее и моду
 def AvgReplaseData(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :return: Датафрейм без NaN
+    """
   d = data
   for name, values in d.items():
     if (values.dtypes == 'O'):
@@ -126,6 +183,10 @@ def AvgReplaseData(data: pd.DataFrame) -> pd.DataFrame:
 
 #Функция замены на медиану и моду
 def MedianReplaseData(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :return: Датафрейм без NaN
+    """
   d = data
   for name, values in d.items():
     if (values.dtypes == 'O'):
@@ -139,6 +200,9 @@ def MedianReplaseData(data: pd.DataFrame) -> pd.DataFrame:
 # Обработка выбросов
 
 def IQR(data: pd.DataFrame):
+    """
+    :param data: Датафрейм
+    """
   for name, values in data.items():
     if (values.dtypes == 'float64' or values.dtypes == 'Int64'):
       dataNotNull = data[name].dropna()
@@ -153,6 +217,9 @@ def IQR(data: pd.DataFrame):
 
 
 def StandardDeviations(data: pd.DataFrame):
+    """
+    :param data: Датафрейм
+    """
     for name, values in data.items():
         if (values.dtypes == 'float64' or values.dtypes == 'Int64'):
             data_std = np.std(data[name])
@@ -169,6 +236,12 @@ def StandardDeviations(data: pd.DataFrame):
 #Функция фильтрации на основе корреляции к label
 #Возвращает новый дф, на доработку
 def Correlation(data: pd.DataFrame, label_name: str, attributeCount: str) -> pd.DataFrame:
+    """
+    :param data: Датафрейм
+    :param label_name: название метки
+    :param attributeCount: количество признаков(N)
+    :return: Датафрейм с N признаков
+    """
   correlation_matrix = data.corr()
   attributes = correlation_matrix[label_name].drop([label_name])
   attributes = attributes.abs().sort_values(ascending=False)

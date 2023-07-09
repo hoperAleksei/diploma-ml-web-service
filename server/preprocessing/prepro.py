@@ -8,7 +8,8 @@ PRE_TYPES = [{
         {"name": "Удаление столбцов", "nm":"DelNanColumn"},
         {"name": "Замена на среднее", "nm":"AvgReplaseData"},
         {"name": "Замена на медиану", "nm":"MedianReplaseData"}
-    ]
+    ],
+    "desc": "Очищает выборку от пропущенных значений"
 },{
     "type": "ec",
     "name": "Категориальное кодирование",
@@ -16,7 +17,8 @@ PRE_TYPES = [{
         {"name": "Label encoding", "nm":"AttributeLabelEncoder"},
         {"name": "One-hot encoding", "nm": "AttributeOneHotEncoder"},
         {"name": "Binary encoding", "nm":"AttributeBinaryEncoder"}
-    ]
+    ],
+    "desc": "Заменяет категориальные значения числовыми"
 },{
     "type": "nd",
     "name": "Нормализация данных",
@@ -25,33 +27,46 @@ PRE_TYPES = [{
         {"name": "Min-max нормализация", "nm": "MinMaxNormalizeAttributes"},
         {"name": "Z-score", "nm":"ZScoreNormalizeAttributes"},
         {"name": "Максимальное абсолютное отклонение", "nm":"MaxAbsoluteScalingNormalizeAttributes"}
-    ]
+    ],
+    "desc": "Приводит данные в единный масштаб"
 },{
     "type": "ov",
     "name": "Обработка выбросов",
     "methods": [
         {"name": "IQR", "nm":"IQR"},
         {"name": "Стандартное отклонение", "nm": "StandardDeviations"}
-    ]
+    ],
+    "desc": "Очищает выборку от сильно не типичных значений класса"
 },{
     "type": "sa",
     "name": "Отбор признаков",
     "methods": [
         {"name": "Корреляция", "nm":"Correlation"},
         {"name": "КсиКвадрат", "nm": "ChiSquare"}
-    ]
+    ],
+    "value": "Число",
+    "desc": "Оставляет N наиболее значимых признаков"
 },{
     "type": "de",
-    "name": "Удаление признака"
+    "name": "Удаление признака",
+    "value": "Лист признаков",
+    "desc": "Удаляет выбранные признаки"
 },{
     "type": "tn",
-    "name": "Замена значений на Nan"
+    "name": "Замена значений на Nan",
+    "value": "Лист значений",
+    "desc": "Заменяет выбранные значения на Nan"
 }
 ]
 
 
 
-def preproc(data_set: DataFrame, pre_types: dict):
+def preproc(data_set: DataFrame, pre_types: dict) -> list:
+    """
+    :param data_set: Выборка данных
+    :param pre_types: словарь с методами предобработки и меткой
+    :return: список, состоящий из признаков, метки и закодированной метки
+    """
     res = [data_set]
     data_set = data_set.dropna()
     data_set.reset_index(inplace=True)
