@@ -66,12 +66,10 @@ def AttributeLabelEncoder(data: pd.DataFrame):
     :param data: Датафрейм
     :return: Датафрейм с заменой object на float
     """
-
     for name, values in data.items():
         if (values.dtypes == 'O'):
             labelencoder = LabelEncoder()
             data[name] = labelencoder.fit_transform(values)
-
 
 # функция кодирования категориальных признаков One-HoteEncoding
 def AttributeOneHotEncoder(data: pd.DataFrame):
@@ -79,7 +77,6 @@ def AttributeOneHotEncoder(data: pd.DataFrame):
     :param data: Датафрейм
     :return: Датафрейм с заменой object на float
     """
-
     for name, values in data.items():
         if (values.dtypes == 'O'):
             onehotencoder = OneHotEncoder()
@@ -97,7 +94,6 @@ def AttributeBinaryEncoder(data: pd.DataFrame):
     :param data: Датафрейм
     :return: Датафрейм с заменой object на float
     """
-
     d = data
     for name, values in data.items():
         if (values.dtypes == 'O'):
@@ -117,7 +113,6 @@ def NormalizeAttributes(data: pd.DataFrame, label_name: str):
     :param label_name: Название метки
     :return: Датафрейм с значениями в едином размере
     """
-
     for name, values in data.items():
         if (values.dtypes != 'O' and name != label_name):
             value_array = np.array(data[name])
@@ -131,7 +126,6 @@ def MinMaxNormalizeAttributes(data: pd.DataFrame, label_name: str):
     :param data: Датафрейм
     :param label_name: Название метки
     """
-
     for name, values in data.items():
         if (values.dtypes != 'O' and name != label_name):
             value_array = np.array(data[name])
@@ -145,7 +139,6 @@ def ZScoreNormalizeAttributes(data: pd.DataFrame, label_name: str):
     :param data: Датафрейм
     :param label_name: Название метки
     """
-
     for name, values in data.items():
         if (values.dtypes != 'O' and name != label_name):
             data[name] = (data[name] - data[name].mean()) / data[name].std()
@@ -156,7 +149,6 @@ def MaxAbsoluteScalingNormalizeAttributes(data: pd.DataFrame, label_name: str):
     :param data: Датафрейм
     :param label_name: Название метки
     """
-
     for name, values in data.items():
         if (values.dtypes != 'O' and name != label_name):
             data[name] = data[name] / data[name].abs().max()
@@ -168,7 +160,6 @@ def DelNanRow(data: pd.DataFrame) -> pd.DataFrame:
     :param data: Датафрейм
     :return: Датафрейм без NaN
     """
-
     d = data.dropna()
     d.reset_index(drop=True)
     return d
@@ -179,7 +170,6 @@ def DelNanColumn(data: pd.DataFrame) -> pd.DataFrame:
     :param data: Датафрейм
     :return: Датафрейм без NaN
     """
-
     d = data.dropna(axis=1)
     d.reset_index(drop=True)
     return d
@@ -191,7 +181,6 @@ def AvgReplaseData(data: pd.DataFrame) -> pd.DataFrame:
     :param data: Датафрейм
     :return: Датафрейм без NaN
     """
-
     d = data
     for name, values in d.items():
         if (values.dtypes == 'O'):
@@ -209,7 +198,6 @@ def MedianReplaseData(data: pd.DataFrame) -> pd.DataFrame:
     :param data: Датафрейм
     :return: Датафрейм без NaN
     """
-
     d = data
     for name, values in d.items():
         if (values.dtypes == 'O'):
@@ -227,7 +215,6 @@ def IQR(data: pd.DataFrame):
     """
     :param data: Датафрейм
     """
-
     for name, values in data.items():
         if (values.dtypes == 'float64' or values.dtypes == 'Int64'):
             dataNotNull = data[name].dropna()
@@ -258,6 +245,7 @@ def StandardDeviations(data: pd.DataFrame):
 
 
 # Отбор признаков
+
 # Предварительно необходим encoding, работает только с числовыми значениями
 # Функция фильтрации на основе корреляции к label
 # Возвращает новый дф, на доработку
@@ -268,7 +256,6 @@ def Correlation(data: pd.DataFrame, label_name: str, attributeCount: str) -> pd.
     :param attributeCount: количество признаков(N)
     :return: Датафрейм с N признаков
     """
-
     correlation_matrix = data.corr()
     attributes = correlation_matrix[label_name].drop([label_name])
     attributes = attributes.abs().sort_values(ascending=False)
