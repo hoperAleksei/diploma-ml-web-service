@@ -16,4 +16,5 @@ aiofiles
 category_encoders
 seaborn
 matplotlib
+autoload-module
 wget
