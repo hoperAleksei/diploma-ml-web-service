@@ -1,14 +1,14 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi import UploadFile
 
 from auth.schemas import User
 from auth.security import get_current_user
 from state_manager.schemas import UserState, State
 
-from .dataset import save_dataset, get_datasets, load_dataset, save_url
-from .schemas import Dataset, Url
+from .dataset import save_dataset, get_datasets, load_dataset, save_url, get_ds_table
+from .schemas import Dataset, Url, SampleTable
 
 import globals
 
@@ -47,7 +47,13 @@ async def use_dataset(
         ds: Dataset,
         current_user: User = Depends(get_current_user)
 ):
-    user_state = globals.state[current_user.username]
+    try:
+        user_state = globals.state[current_user.username]
+    except KeyError:
+        raise HTTPException(
+            status_code=409,
+            detail="User is not start experiment"
+        )
     if user_state.state == State.start:
         dataset_id = ds.id
         if dataset_id not in globals.datasets:
@@ -64,4 +70,21 @@ async def use_dataset(
         raise HTTPException(
             status_code=409,
             detail="User use dataset experiment"
+        )
+
+
+@router.get("/get_use", response_model=SampleTable)
+async def get_user_dataset(
+        current_user: User = Depends(get_current_user)
+):
+    try:
+        state = globals.state[current_user.username]
+        ds = state.dataset
+
+        return await get_ds_table(ds)
+
+    except KeyError:
+        raise HTTPException(
+            status_code=409,
+            detail="User not use dataset"
         )

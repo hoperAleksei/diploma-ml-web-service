@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Any
 
 class Dataset(BaseModel):
     id: int
@@ -8,3 +8,9 @@ class Dataset(BaseModel):
 
 class Url(BaseModel):
     url: str
+
+
+class SampleTable(BaseModel):
+    names: list[str]
+    types: list[str]
+    lines: list[list[Any]]
