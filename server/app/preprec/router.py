@@ -25,11 +25,5 @@ def preproces_dataset(
         current_user: User = Depends(get_current_user)
 ):
     res = prepr(current_user, methods)
-    #res.drop(['start'], axis=1)
-    #res.drop(['stop'], axis=1)
-    #d = pd.DataFrame()
-    #d["hgb"] = res["hgb"]
-    #json_data = jsonable_encoder({k: v.tolist() for k, v in res.items()})
-    #return JSONResponse(content=json_data)
     return res
 

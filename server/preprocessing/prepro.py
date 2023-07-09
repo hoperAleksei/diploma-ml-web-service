@@ -8,7 +8,8 @@ PRE_TYPES = [{
         {"name": "Удаление столбцов", "nm":"DelNanColumn"},
         {"name": "Замена на среднее", "nm":"AvgReplaseData"},
         {"name": "Замена на медиану", "nm":"MedianReplaseData"}
-    ]
+    ],
+    "desc": "Очищает выборку от пропущенных значений"
 },{
     "type": "ec",
     "name": "Категориальное кодирование",
@@ -16,7 +17,8 @@ PRE_TYPES = [{
         {"name": "Label encoding", "nm":"AttributeLabelEncoder"},
         {"name": "One-hot encoding", "nm": "AttributeOneHotEncoder"},
         {"name": "Binary encoding", "nm":"AttributeBinaryEncoder"}
-    ]
+    ],
+    "desc": "Заменяет категориальные значения числовыми"
 },{
     "type": "nd",
     "name": "Нормализация данных",
@@ -25,32 +27,56 @@ PRE_TYPES = [{
         {"name": "Min-max нормализация", "nm": "MinMaxNormalizeAttributes"},
         {"name": "Z-score", "nm":"ZScoreNormalizeAttributes"},
         {"name": "Максимальное абсолютное отклонение", "nm":"MaxAbsoluteScalingNormalizeAttributes"}
-    ]
+    ],
+    "desc": "Приводит данные в единный масштаб"
 },{
     "type": "ov",
     "name": "Обработка выбросов",
     "methods": [
         {"name": "IQR", "nm":"IQR"},
         {"name": "Стандартное отклонение", "nm": "StandardDeviations"}
-    ]
+    ],
+    "desc": "Очищает выборку от сильно не типичных значений класса"
 },{
     "type": "sa",
     "name": "Отбор признаков",
     "methods": [
-        {"name": "Корреляция", "nm":"Corelation"},
+        {"name": "Корреляция", "nm":"Correlation"},
         {"name": "КсиКвадрат", "nm": "ChiSquare"}
-    ]
+    ],
+    "value": "Число",
+    "desc": "Оставляет N наиболее значимых признаков"
+},{
+    "type": "de",
+    "name": "Удаление признака",
+    "value": "Лист признаков",
+    "desc": "Удаляет выбранные признаки"
+},{
+    "type": "tn",
+    "name": "Замена значений на Nan",
+    "value": "Лист значений",
+    "desc": "Заменяет выбранные значения на Nan"
 }
 ]
 
 
 
-def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
+def preproc(data_set: DataFrame, pre_types: dict) -> list:
+    """
+    :param data_set: Выборка данных
+    :param pre_types: словарь с методами предобработки и меткой
+    :return: список, состоящий из признаков, метки и закодированной метки
+    """
+    res = [data_set]
     data_set = data_set.dropna()
     data_set.reset_index(inplace=True)
+    label = data_set[pre_types["label"]]
+    data_set[pre_types["label"]] = pf.OneAttributeLabelEncoder(label)
     pf.convert_types(data_set)
     if "de" in pre_types.keys():
         data_set = pf.del_columns(data_set, pre_types["de"])
+    if "tn" in pre_types.keys():
+        data_set = transform_value_to_nan(data_set, pre_types["tn"])
     if "op" in pre_types.keys():
         if ("DelNanRow" == pre_types["op"]):
             data_set = pf.DelNanRow(data_set)
@@ -65,6 +91,7 @@ def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
             pf.AttributeLabelEncoder(data_set)
         if ("AttributeOneHotEncoder" == pre_types["ec"]):
             pf.AttributeOneHotEncoder(data_set)
+            print(data_set)
         if ("AttributeBinaryEncoder" == pre_types["ec"]):
             pf.AttributeBinaryEncoder(data_set)
     if "nd" in pre_types.keys():
@@ -90,6 +117,10 @@ def preproc(data_set: DataFrame, pre_types: dict) -> DataFrame:
         if ("MedianReplaseData" == pre_types["op"]):
             data_set = pf.MedianReplaseData(data_set)
     if "sa" in pre_types.keys() and "op" in pre_types.keys() and "ec" in pre_types.keys():
-        if ("Corelation" == pre_types["sa"]):
-            data_set = pf.Corelation(data_set, pre_types["label"], pre_types["count"])
-    return data_set
+        if ("Correlation" == pre_types["sa"]):
+            data_set = pf.Correlation(data_set, pre_types["label"], pre_types["count"])
+    pf.convert_types(data_set)
+    labelcode = data_set[pre_types["label"]]
+    data_set.drop([pre_types["label"]], axis= 1 , inplace= True )
+    res = [data_set, label, labelcode]
+    return res

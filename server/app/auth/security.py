@@ -14,7 +14,7 @@ from config import SECRET_KEY
 
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 2000
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

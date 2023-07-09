@@ -124,7 +124,7 @@ export default {
       }
     ],
     rules_password: [
-        value => {
+      value => {
         if (value < 5) {
           return 'Пароль должен быть от 5 символов'
         } else {
