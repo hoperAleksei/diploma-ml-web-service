@@ -1,9 +1,9 @@
 import uvicorn
 
 from fastapi import FastAPI, Request, status, Depends
-from fastapi.exceptions import ValidationError
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
 
 from auth.router import router as auth_router
@@ -25,12 +25,13 @@ origins = [
 ]
 
 app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["172.21.0.6", "http://localhost/login"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    CORSMiddleware,
+    allow_origins=["172.21.0.6", "http://localhost/login"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request: Request, exc: ValidationError):
@@ -39,5 +40,15 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
         content=jsonable_encoder({"detail": exc.errors()}),
     )
 
+
+import globals
+
+
+@app.get("/api/get_all")
+async def get_all():
+    # return  globals.state
+    return [{u: {"state": s.state, "name": s.name, "dataset_id": s.dataset_id, "splits": s.splits, "autofit": s.autofit}} for u, s in globals.state.items()]
+
+# {"state": s.state, "name": s.name, "dataset_id": s.dataset_id, "splits": s.splits, "autofit": s.autofit}
 if __name__ == '__main__':
     uvicorn.run("main:app", host='0.0.0.0', port=8000, reload=True)

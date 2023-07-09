@@ -1,6 +1,8 @@
 import {createStore} from 'vuex'
 import createPersistedState from "vuex-persistedstate";
-import {getMe, getAuth} from "@/api/auth";
+import {getAuth, getMe} from "@/api/auth";
+import {createExperiment, deleteExperiment, getState} from "@/api/experiment";
+import {getDatasets, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
 
 function setLogin(context, token, username, role) {
     context.commit('setToken', token)
@@ -15,10 +17,15 @@ export default createStore({
         username: '',
         role: '',
         token: '',
-        state: 'start',
+        state: 'ready',
+        expName: '',
+        dataset: null
     }),
     getters: {},
     mutations: {
+        setState(state, newState) {
+            state.state = newState
+        },
         setAuth(state, isAuth) {
             state.isAuth = isAuth
         },
@@ -30,9 +37,20 @@ export default createStore({
         },
         setRole(state, role) {
             state.role = role
-        }
+        },
+        setExpName(state, name) {
+            state.expName = name
+        },
+        setDataset(state, id) {
+            state.dataset = id
+        },
     },
     actions: {
+        async updateState(context) {
+            let res = await getState(context.state.token)
+            context.commit('setState', res.state)
+            context.commit('setExpName', res.name)
+        },
         logout(context) {
             context.commit('setToken', '')
             context.commit('setAuth', false)
@@ -56,6 +74,42 @@ export default createStore({
             } else {
                 throw new Error('Invalid user or password')
             }
+        },
+        async createExp(context, {name}) {
+            let res = await createExperiment(context.state.token, name)
+            return !!res.status
+        },
+        async cancelExp(context) {
+            let res = await deleteExperiment(context.state.token)
+            if (res) {
+                context.commit('setExpName', '')
+                await context.dispatch("updateState")
+            }
+            return !!res.status
+        },
+        async getDatasets(context) {
+            try {
+                return await getDatasets(context.state.token)
+            }
+            catch (e) {
+                console.log(e)
+            }
+        },
+        async useDataset(context, {id}) {
+            let res = await useDataset(context.state.token, id)
+            if (res.status) {
+                context.commit("setDataset", id)
+                await context.dispatch("updateState")
+            }
+            return !!res.status
+        },
+        async postDsFile(context, {file}) {
+            let res = await uploadDsFile(context.state.token, file)
+            return res
+        },
+        async postDsUrl(context, {url}) {
+            let res = await uploadDsUrl(context.state.token, url)
+            return res
         },
     },
     // modules: {},
