@@ -1,10 +1,11 @@
 from sklearn.metrics import accuracy_score, precision_score, recall_score, auc, roc_curve, f1_score
 from itertools import product
 import random
+from .algs.algorithm import Algorithm
 from .loader import get_load_algs_names, algs_loader, get_alg_by_name
 
 
-def experiment_grid(params, n_model=10):
+def experiment_grid(params: dict, n_model: int = 10) -> list[dict]:
     """
     :param params: словарь параметров в формате
     params = {
@@ -30,7 +31,12 @@ def experiment_grid(params, n_model=10):
     return out_dict
 
 
-def int_param_generator(int_params, n_steps=5):
+def int_param_generator(int_params, n_steps=10):
+    """
+        :param int_params:
+        :param n_steps:
+        :return:
+    """
     if n_steps <= 0:
         n_steps = 1
 
@@ -48,7 +54,6 @@ def int_param_generator(int_params, n_steps=5):
 
 def float_param_generator(float_params, n_steps=10):
     """
-
     :param float_params:
     :param n_steps:
     :return:
@@ -68,7 +73,7 @@ def float_param_generator(float_params, n_steps=10):
 
 def param_generator(params, n_steps=5):
     """
-    :param params:
+    :param params: словарь параметров в формате
     params = {
     'n_neighbors': {
             'type': 'int',
@@ -106,7 +111,7 @@ def param_generator(params, n_steps=5):
     return out_params
 
 
-def experiment(algorithm, prams_values, x_train, y_train, x_test, y_test):
+def experiment(algorithm: Algorithm, prams_values, x_train, y_train, x_test, y_test):
     """
     :param y_test: pd.DataFrame
     :param x_test: pd.DataFrame
@@ -212,43 +217,3 @@ def run_experiments(algs_and_params, x_train, y_train, x_test, y_test):
             out_list.append(experiment(alg, params, x_train, y_train, x_test, y_test))
 
     return out_list
-
-
-# from sklearn.datasets import load_iris
-#
-# iris = load_iris()
-# algs_and_params = [
-#     {
-#         'alg_name': 'knn',
-#         'n_steps': 5,
-#         'params': {
-#             'n_neighbors': {
-#                 'type': 'int',
-#                 'min': 1,
-#                 'max': 5
-#             },
-#             'weights': {
-#                 'type': 'set',
-#                 'values': ['uniform', 'distance']
-#             }
-#         }
-#     },
-#     {
-#         'alg_name': 'knn',
-#         'n_steps': 5,
-#         'params': {
-#             'n_neighbors': {
-#                 'type': 'int',
-#                 'min': 1,
-#                 'max': 5
-#             },
-#             'weights': {
-#                 'type': 'set',
-#                 'values': ['uniform', 'distance']
-#             }
-#         }
-#     }
-# ]
-#
-# print(run_experiments(algs_and_params, iris.data, iris.target, iris.data, iris.target))
-

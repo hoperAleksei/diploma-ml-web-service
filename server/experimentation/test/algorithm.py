@@ -119,7 +119,7 @@ class Algorithm(ABC):
         for i in input_list:
             output_list.append(i.value)
         return output_list
-
+    
     def check_input_types(self, x: pd.DataFrame) -> bool:  # возможно переделать под list
         """
         Функция проверки типов в X на соответствие типам, которые принимает алгоритм
