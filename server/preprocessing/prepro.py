@@ -55,6 +55,8 @@ def preproc(data_set: DataFrame, pre_types: dict):
     res = [data_set]
     data_set = data_set.dropna()
     data_set.reset_index(inplace=True)
+    label = data_set[pre_types["label"]]
+    data_set[pre_types["label"]] = pf.OneAttributeLabelEncoder(label)
     pf.convert_types(data_set)
     if "de" in pre_types.keys():
         data_set = pf.del_columns(data_set, pre_types["de"])
@@ -102,4 +104,8 @@ def preproc(data_set: DataFrame, pre_types: dict):
     if "sa" in pre_types.keys() and "op" in pre_types.keys() and "ec" in pre_types.keys():
         if ("Correlation" == pre_types["sa"]):
             data_set = pf.Correlation(data_set, pre_types["label"], pre_types["count"])
-    return data_set
+    pf.convert_types(data_set)
+    labelcode = data_set[pre_types["label"]]
+    data_set.drop([pre_types["label"]], axis= 1 , inplace= True )
+    res = [data_set, label, labelcode]
+    return res
