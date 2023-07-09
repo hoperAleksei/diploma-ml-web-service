@@ -1,9 +1,9 @@
 import uvicorn
 
 from fastapi import FastAPI, Request, status, Depends
+from pydantic import ValidationError
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
 
 from auth.router import router as auth_router
@@ -25,13 +25,12 @@ origins = [
 ]
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["172.21.0.6", "http://localhost/login"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+        CORSMiddleware,
+        allow_origins=["172.21.0.6", "http://localhost/login"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request: Request, exc: ValidationError):

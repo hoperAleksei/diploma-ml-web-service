@@ -1,11 +1,13 @@
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn import preprocessing
-from sklearn.preprocessing import LabelEncoder
+from category_encoders.binary import BinaryEncoder
+import seaborn as sns
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-def convert_types(data):
+def convert_types(data: pd.DataFrame):
     for name, values in data.items():
         if (values.dtypes == 'int64'):
             data[name] = data[name].astype('float64')
@@ -15,51 +17,65 @@ def convert_types(data):
             except ValueError:
                 print(f"{name}: fail convert to float64")
 
-def del_columns(data, columns):
+def del_columns(data: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     x = data
     for name in columns:
         x = x.drop([name], axis=1)
     return x
 
+def transform_value_to_nan(data: pd.DataFrame, values: str) -> pd.DataFrame:
+    x = data
+    for val in values:
+        x = x.replace(val, np.NaN)
+    return x
+
 #Encoding
 
 #функция кодирования категориальных признаков LabelEncoding
-def AttributeLabelEncoder(data):
+def OneAttributeLabelEncoder(data: pd.Series) -> pd.DataFrame:
+    if (data.dtypes == 'O'):
+      labelencoder = LabelEncoder()
+      return (labelencoder.fit_transform(data))
+    else:
+        return data
+
+
+#функция кодирования категориальных признаков LabelEncoding
+def AttributeLabelEncoder(data: pd.DataFrame):
   for name, values in data.items():
     if (values.dtypes == 'O'):
       labelencoder = LabelEncoder()
-      attribute_new = labelencoder.fit_transform(values)
-      data[name] = attribute_new
+      data[name] = labelencoder.fit_transform(values)
 
 #функция кодирования категориальных признаков One-HoteEncoding
-def AttributeOneHotEncoder(data):
+def AttributeOneHotEncoder(data: pd.DataFrame):
   for name, values in data.items():
     if (values.dtypes == 'O'):
       onehotencoder = OneHotEncoder()
       data_new = onehotencoder.fit_transform(data[[name]])
       data_new = pd.DataFrame(data_new.toarray(),
-      columns=onehotencoder.categories_)
+      columns=onehotencoder.categories_[0])
       data.drop(name, axis= 1 , inplace= True )
-      data = data.join(data_new)
+      for column in onehotencoder.categories_[0]:
+        data[column] = data_new[column]
 
 
-from category_encoders.binary import BinaryEncoder
 #функция кодирования категориальных признаков BinaryEncoder
-from category_encoders.binary import BinaryEncoder
-def AttributeBinaryEncoder(data):
+def AttributeBinaryEncoder(data: pd.DataFrame):
+  d = data
   for name, values in data.items():
     if (values.dtypes == 'O'):
       binaryencoder = BinaryEncoder()
       data_new = binaryencoder.fit_transform(data[[name]])
-      data.drop(name, axis= 1 , inplace= True )
-      data = data.join(data_new)
+      d.drop(name, axis= 1 , inplace= True )
+      for column in list(data_new.columns):
+        d[column] = data_new[column]
 
 
 #Normalize
 
 #функция нормализации данных
-from sklearn.preprocessing import LabelEncoder
-def NormalizeAttributes(data, label_name):
+def NormalizeAttributes(data: pd.DataFrame, label_name: str):
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       value_array = np.array(data[name])
@@ -67,8 +83,7 @@ def NormalizeAttributes(data, label_name):
       data[name] = normalized_attribute[0]
 
 #функция min-max нормализации данных
-from sklearn.preprocessing import LabelEncoder
-def MinMaxNormalizeAttributes(data, label_name):
+def MinMaxNormalizeAttributes(data: pd.DataFrame, label_name: str):
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       value_array = np.array(data[name])
@@ -76,29 +91,29 @@ def MinMaxNormalizeAttributes(data, label_name):
       normalized_attribute = min_max_scaler.fit_transform(np.transpose([value_array]))
       data[name] = np.transpose(normalized_attribute)[0]
 
-def ZScoreNormalizeAttributes(data, label_name):
+def ZScoreNormalizeAttributes(data: pd.DataFrame, label_name: str):
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       data[name] = (data[name] - data[name].mean()) / data[name].std()
 
-def MaxAbsoluteScalingNormalizeAttributes(data, label_name):
+def MaxAbsoluteScalingNormalizeAttributes(data: pd.DataFrame, label_name: str):
   for name, values in data.items():
     if (values.dtypes != 'O' and name != label_name):
       data[name] = data[name] / data[name].abs().max()
 
 # Обработка пропусков
-def DelNanRow(data):
+def DelNanRow(data: pd.DataFrame) -> pd.DataFrame:
   d = data.dropna()
   d.reset_index(drop=True)
   return d
 
-def DelNanColumn(data):
+def DelNanColumn(data: pd.DataFrame) -> pd.DataFrame:
   d = data.dropna(axis=1)
   d.reset_index(drop=True)
   return d
 
 #Функция замены на среднее и моду
-def AvgReplaseData(data):
+def AvgReplaseData(data: pd.DataFrame) -> pd.DataFrame:
   d = data
   for name, values in d.items():
     if (values.dtypes == 'O'):
@@ -110,8 +125,7 @@ def AvgReplaseData(data):
   return d
 
 #Функция замены на медиану и моду
-from sklearn.preprocessing import LabelEncoder
-def MedianReplaseData(data):
+def MedianReplaseData(data: pd.DataFrame) -> pd.DataFrame:
   d = data
   for name, values in d.items():
     if (values.dtypes == 'O'):
@@ -124,7 +138,7 @@ def MedianReplaseData(data):
 
 # Обработка выбросов
 
-def IQR(data):
+def IQR(data: pd.DataFrame):
   for name, values in data.items():
     if (values.dtypes == 'float64' or values.dtypes == 'Int64'):
       dataNotNull = data[name].dropna()
@@ -138,7 +152,7 @@ def IQR(data):
       data.loc[data[name] > max,name] = np.nan
 
 
-def StandardDeviations(data):
+def StandardDeviations(data: pd.DataFrame):
     for name, values in data.items():
         if (values.dtypes == 'float64' or values.dtypes == 'Int64'):
             data_std = np.std(data[name])
