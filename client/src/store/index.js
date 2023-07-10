@@ -4,6 +4,7 @@ import {getAuth, getMe} from "@/api/auth";
 import {createExperiment, deleteExperiment, getState} from "@/api/experiment";
 import {getDatasets, getDsNames, getTable, restoreDs, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
 import {getPre, preCommit, prepro} from "@/api/preproc";
+import {split} from "@/api/split";
 
 function setLogin(context, token, username, role) {
     context.commit('setToken', token)
@@ -48,7 +49,7 @@ export default createStore({
     },
     actions: {
         async updateState(context) {
-            let res = await getState(context.state.token)
+            const res = await getState(context.state.token)
             context.commit('setState', res.state)
             context.commit('setExpName', res.name)
         },
@@ -59,16 +60,16 @@ export default createStore({
             context.commit('setRole', '')
         },
         async login(context, {username, password}) {
-            let res = await getAuth('login', username, password)
+            const res = await getAuth('login', username, password)
             if (res.status === true) {
-                let user = await getMe(res.token)
+                const user = await getMe(res.token)
                 setLogin(context, res.token, user.username, user.role)
             } else {
                 throw new Error('Invalid user or password')
             }
         },
         async register(context, {username, password}) {
-            let res = await getAuth('register', username, password)
+            const res = await getAuth('register', username, password)
             if (res.status === true) {
                 let user = await getMe(res.token)
                 setLogin(context, res.token, user.username, user.role)
@@ -77,11 +78,11 @@ export default createStore({
             }
         },
         async createExp(context, {name}) {
-            let res = await createExperiment(context.state.token, name)
+            const res = await createExperiment(context.state.token, name)
             return !!res.status
         },
         async cancelExp(context) {
-            let res = await deleteExperiment(context.state.token)
+            const res = await deleteExperiment(context.state.token)
             if (res) {
                 context.commit('setExpName', '')
                 await context.dispatch("updateState")
@@ -96,7 +97,7 @@ export default createStore({
             }
         },
         async useDataset(context, {id}) {
-            let res = await useDataset(context.state.token, id)
+            const res = await useDataset(context.state.token, id)
             if (res.status) {
                 context.commit("setDataset", id)
                 await context.dispatch("updateState")
@@ -126,6 +127,11 @@ export default createStore({
         },
         async preCommit(context) {
             const res = await preCommit(context.state.token)
+            await context.dispatch("updateState")
+            return res
+        },
+        async postSplits(context, {splits}) {
+            const res = await split(context.state.token, splits)
             await context.dispatch("updateState")
             return res
         },
