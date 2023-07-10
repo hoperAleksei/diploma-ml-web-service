@@ -7,7 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/server/datasets" />
       <excludeFolder url="file://$MODULE_DIR$/server/persistence" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.11.3 Docker Compose (server)" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

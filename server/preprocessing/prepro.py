@@ -60,6 +60,45 @@ PRE_TYPES = [{
 }
 ]
 
+#Проверяет параметры датафрейма
+def data_param(data: DataFrame) -> list:
+    """
+    :param data: Датасет
+    :return: список, параметров датасета, для алгоритмов
+    """
+    norm = True
+    num = True
+    not_null = data.isnull().values.any()
+    for name, values in data.items():
+        if (values.dtypes == 'O'):
+            num = False
+            break
+    for name, values in data.items():
+        if (values.dtypes != 'O'):
+            if (values.max() > 1 or values.min() < -1):
+                norm = False
+                break
+    return [not_null, num, norm]
+
+#Записывает алгоримтмы с статусом
+def list_alg(data: DataFrame, alg_req: dict) -> list:
+    """
+    :param data: Датасет
+    :return: список, из словарей ключ – название алгоритма, значение – статус
+    """
+    data_par = data_param(data)
+    algs = []
+    check = True
+    for alg in alg_req:
+        status = "ok"
+        if (alg["requirements"]["NOT_NULL"] == True and data_par[0] == False):
+           status = "not"
+        if (alg["requirements"]["NUM"] == True and data_par[1] == False):
+            status = "not"
+        if (alg["requirements"]["NORM"] == True and data_par[2] == False):
+            status = "not"
+        algs.append({alg["alg_name"]:status})
+    return alg
 
 def preproc(data_set: DataFrame, pre_types: dict) -> list:
     """
@@ -70,8 +109,7 @@ def preproc(data_set: DataFrame, pre_types: dict) -> list:
 
     try:
         res = [data_set]
-        data_set = data_set.dropna()
-        data_set.reset_index(inplace=True)
+        data_param(data_set)
         label = data_set[pre_types["label"]]
         data_set[pre_types["label"]] = pf.OneAttributeLabelEncoder(label)
         pf.convert_types(data_set)
@@ -124,7 +162,8 @@ def preproc(data_set: DataFrame, pre_types: dict) -> list:
         pf.convert_types(data_set)
         labelcode = data_set[pre_types["label"]]
         data_set.drop([pre_types["label"]], axis=1, inplace=True)
-        res = [data_set, label, labelcode]
+        res = [data_set, pre_types["label"], labelcode]
+        #print(data_set.isnull().sum()[0].index)
         return res
     except KeyError:
         raise Exception("key Error")
