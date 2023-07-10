@@ -163,7 +163,6 @@ def preproc(data_set: DataFrame, pre_types: dict) -> list:
         labelcode = data_set[pre_types["label"]]
         data_set.drop([pre_types["label"]], axis=1, inplace=True)
         res = [data_set, pre_types["label"], labelcode]
-        #print(data_set.isnull().sum()[0].index)
         return res
     except KeyError:
         raise Exception("key Error")
