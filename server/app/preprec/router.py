@@ -3,9 +3,10 @@ from fastapi import File, UploadFile
 
 from auth.schemas import User
 from auth.security import get_current_user
+from pydantic import BaseModel
 
 from .proc import PRE_TYPES, prepr
-from .schemas import PreSend
+from .schemas import PreSend, Pre
 
 import globals
 
@@ -17,11 +18,12 @@ router = APIRouter(
 )
 
 
-@router.get("/types")
+@router.get("/types", response_model=list[Pre])
 async def get_pre_types(
         current_user: User = Depends(get_current_user)
 ):
-    return PRE_TYPES
+    return [Pre.model_validate(pre) for pre in PRE_TYPES]
+    # return PRE_TYPES
 
 
 @router.post("")
