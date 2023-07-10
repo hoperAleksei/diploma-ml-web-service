@@ -1,5 +1,6 @@
 from autoload import ModuleLoader
 from .algs.algorithm import Algorithm
+from .schemas import get_all_alg_output
 
 
 def algs_loader(folder: str) -> list[Algorithm]:
@@ -117,10 +118,10 @@ def get_all_alg(classes_names: list) -> list[dict]:
 
     for cls in classes:
         if cls.ALGORITHM_NAME in classes_names:
-            out_list.append({
+            out_list.append(get_all_alg_output.parse_obj({
                 "name": cls.ALGORITHM_NAME,
                 "params": cls.PARAMS
-            })
+            }))
 
     return out_list
 

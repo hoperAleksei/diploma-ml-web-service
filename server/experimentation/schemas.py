@@ -62,4 +62,13 @@ parseOut = \
         ]
     }
 
-print(ParseOut.parse_obj(parseOut))
+# print(ParseOut.parse_obj(parseOut))
+
+
+# loader.get_all_alg
+
+
+class get_all_alg_output(BaseModel):
+    name: str
+    params: list[Param]
+

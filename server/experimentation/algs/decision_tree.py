@@ -15,19 +15,21 @@ class tree(DecisionTreeClassifier, Algorithm):
                    Algorithm.InputTypes.FLOAT,
                    Algorithm.InputTypes.BOOL,
                    Algorithm.InputTypes.STRING]
-    PARAMS = {
-        'max_depth': {
+    PARAMS = [
+        {
+            'name': 'max_depth',
             'type': 'int',
             'min': '1',
             'max': '100',
             'decs': 'Максимальная глубина дерева'
         },
-        'criterion': {
+        {
+            'name': 'criterion',
             'type': 'set',
             'values': ['gini', 'entropy', 'log_loss'],
             'decs': 'Функция разделения'
         }
-    }
+    ]
 
     def __init__(self, max_depth=3, criterion='gini'):
         DecisionTreeClassifier.__init__(self, max_depth=max_depth,
