@@ -26,7 +26,7 @@ class MetricsResult(BaseModel):
     precision: float | None = None
     recall: float | None = None
     f1: float | None = None
-    roc_auc: float | None = None
+    # roc_auc: float | None = None
 
 
 class CurExperimentResult(BaseModel):
@@ -62,4 +62,14 @@ parseOut = \
         ]
     }
 
-print(ParseOut.parse_obj(parseOut))
+# print(ParseOut.parse_obj(parseOut))
+
+
+# loader.get_all_alg
+
+
+class get_all_alg_output(BaseModel):
+    name: str
+    desc: str
+    params: list[Param]
+

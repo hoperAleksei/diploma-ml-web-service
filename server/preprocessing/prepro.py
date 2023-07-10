@@ -70,8 +70,6 @@ def preproc(data_set: DataFrame, pre_types: dict) -> list:
 
     try:
         res = [data_set]
-        data_set = data_set.dropna()
-        data_set.reset_index(inplace=True)
         label = data_set[pre_types["label"]]
         data_set[pre_types["label"]] = pf.OneAttributeLabelEncoder(label)
         pf.convert_types(data_set)

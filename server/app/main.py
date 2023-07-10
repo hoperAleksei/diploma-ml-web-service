@@ -12,6 +12,7 @@ from auth.router import router as auth_router
 from datasets.router import router as datasets_router
 from preprec.router import router as preprec_router
 from split.router import router as split_router
+from algs.router import router as algs_router
 
 from state_manager.router import router as sm_router
 
@@ -37,6 +38,7 @@ app.include_router(datasets_router)
 app.include_router(preprec_router)
 app.include_router(sm_router)
 app.include_router(split_router)
+app.include_router(algs_router)
 
 origins = [
     "http://localhost",

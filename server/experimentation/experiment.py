@@ -186,7 +186,7 @@ def experiment(algorithm: Algorithm, prams_values: list[dict],
             "precision": round(precision, 3),
             "recall": round(recall, 3),
             "f1": round(f1, 3),
-            "roc_auc": round(roc_auc, 3)
+            # "roc_auc": round(roc_auc, 3)
         }
 
         exp_dict = {
