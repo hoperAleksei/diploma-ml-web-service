@@ -3,8 +3,9 @@ import pandas as pd
 from .algs.algorithm import Algorithm
 # from algs.knn import KNN
 from .loader import algs_loader, get_alg_by_file_name
-
 from sklearn.datasets import load_iris
+
+from .schemas import ParseOut
 
 X_test_df = pd.DataFrame(data={'int': [1, 2, 3, 4, 5],
                                'str': ['a', 'Bb', '', 'D', 'e'],
@@ -115,7 +116,7 @@ def alg_test(a: Algorithm):
 
 def parse(name: str):
     """
-    Функция для тестирования алгоритма
+    Функция для тестирования алгоритма перед загрузкой в систему
 
     :param name: название файла с алгоритмом
     :return: {
@@ -123,20 +124,22 @@ def parse(name: str):
         "details": "exception",
         "name": "db_mane",
         "desc": "desc",
-        "pre": []
+        "pre": ['aboba', 'K']
     }
     """
 
     alg = get_alg_by_file_name(name, algs_loader('test'))
+    # alg = get_alg_by_file_name(name, algs_loader('algs'))
     test_result = alg_test(alg())
 
-    return {
-        "status": test_result[0],
-        "details": test_result[1],
-        "name": alg.ALGORITHM_NAME,
-        "desc": alg.DESCRIPTION,
-        "pre": alg.PRE_REQ
-    }
-    pass
+    out_obj = ParseOut(
+        status=test_result[0],
+        details=test_result[1],
+        name=alg.ALGORITHM_NAME,
+        desc=alg.DESCRIPTION,
+        pre=Algorithm.get_input_types(alg.PRE_REQ)
+    )
+
+    return out_obj
 
 # TODO: затестить все параметры, все значения set + Min и Max (опасно)
