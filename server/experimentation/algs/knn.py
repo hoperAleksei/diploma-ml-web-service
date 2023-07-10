@@ -32,7 +32,7 @@ class KNN(KNeighborsClassifier, Algorithm):
         }
     ]
 
-    def __init__(self, n_neighbors, weights):
+    def __init__(self, n_neighbors=3, weights='uniform'):
         KNeighborsClassifier.__init__(self, n_neighbors=n_neighbors,
                                       weights=weights
                                       )

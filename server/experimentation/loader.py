@@ -120,6 +120,7 @@ def get_all_alg(classes_names: list) -> list[dict]:
         if cls.ALGORITHM_NAME in classes_names:
             out_list.append(get_all_alg_output.parse_obj({
                 "name": cls.ALGORITHM_NAME,
+                'desc': cls.DESCRIPTION,
                 "params": cls.PARAMS
             }))
 

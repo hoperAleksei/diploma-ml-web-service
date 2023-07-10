@@ -70,5 +70,6 @@ parseOut = \
 
 class get_all_alg_output(BaseModel):
     name: str
+    desc: str
     params: list[Param]
 
