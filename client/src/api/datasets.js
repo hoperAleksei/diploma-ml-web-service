@@ -90,7 +90,7 @@ async function uploadDsUrl(token, url) {
 }
 
 async function getTable(token) {
-     try {
+    try {
         let res = await fetch(API_BASE + 'ds/get_use', {
             method: 'GET',
             headers: {
@@ -109,4 +109,24 @@ async function getTable(token) {
     }
 }
 
-export {getDatasets, useDataset, uploadDsFile, uploadDsUrl, getTable}
+async function getDsNames(token) {
+    let res = await fetch(API_BASE + 'ds/names', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    return await res.json()
+}
+
+async function restoreDs(token) {
+    let res = await fetch(API_BASE + 'ds/restore', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    return await res.json()
+}
+
+export {getDatasets, useDataset, uploadDsFile, uploadDsUrl, getTable, getDsNames, restoreDs}

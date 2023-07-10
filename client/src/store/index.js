@@ -2,7 +2,8 @@ import {createStore} from 'vuex'
 import createPersistedState from "vuex-persistedstate";
 import {getAuth, getMe} from "@/api/auth";
 import {createExperiment, deleteExperiment, getState} from "@/api/experiment";
-import {getDatasets, getTable, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
+import {getDatasets, getDsNames, getTable, restoreDs, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
+import {getPre, preCommit, prepro} from "@/api/preproc";
 
 function setLogin(context, token, username, role) {
     context.commit('setToken', token)
@@ -90,8 +91,7 @@ export default createStore({
         async getDatasets(context) {
             try {
                 return await getDatasets(context.state.token)
-            }
-            catch (e) {
+            } catch (e) {
                 console.log(e)
             }
         },
@@ -104,17 +104,31 @@ export default createStore({
             return !!res.status
         },
         async postDsFile(context, {file}) {
-            let res = await uploadDsFile(context.state.token, file)
-            return res
+            return await uploadDsFile(context.state.token, file)
         },
         async postDsUrl(context, {url}) {
-            let res = await uploadDsUrl(context.state.token, url)
-            return res
+            return await uploadDsUrl(context.state.token, url)
         },
         async getTable(context) {
-            let res = await getTable(context.state.token)
+            return await getTable(context.state.token)
+        },
+        async getDsNames(context) {
+            return await getDsNames(context.state.token)
+        },
+        async restoreDs(context) {
+            return await restoreDs(context.state.token)
+        },
+        async getPre(context) {
+            return await getPre(context.state.token)
+        },
+        async prepro(context, {req}) {
+            return await prepro(context.state.token, req)
+        },
+        async preCommit(context) {
+            const res = await preCommit(context.state.token)
+            await context.dispatch("updateState")
             return res
-        }
+        },
     },
     // modules: {},
     plugins: [createPersistedState()]
