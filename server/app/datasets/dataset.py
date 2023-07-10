@@ -21,6 +21,7 @@ import pandas
 DATASETS_PATH = os.path.join(os.path.abspath("."), "datasets")
 SAMPLE_COUNT = 10
 
+
 async def create_dataset(name: str):
     stmt = insert(dataset).values(
         name=name
@@ -100,20 +101,12 @@ async def load_dataset(dataset_id: int) -> pandas.DataFrame | None:
     else:
         raise HTTPException(404, detail="dataset not found")
 
+
 async def get_ds_table(dataset: pandas.DataFrame) -> SampleTable:
     sample = dataset.sample(SAMPLE_COUNT, random_state=0).to_dict()
-    print()
-    print(sample)
-    a = [el for el in sample.values()]
-    print(a)
-    print([[list(el.values())[i] for el in a] for i in range(SAMPLE_COUNT)])
-    # print([[list(el.values())[i] for el in sample.values()] for i in range(SAMPLE_COUNT)])
-    ret = {"names": list(sample.keys()), "types": [str(i) for i in dataset.dtypes.values],
-           "lines": [[list(el.values())[i] for el in a] for i in range(SAMPLE_COUNT)]}
-    print(ret)
-    r = SampleTable(
+
+    return SampleTable(
         names=list(sample.keys()),
         types=[str(i) for i in dataset.dtypes.values],
-        lines=[[list(el.values())[i] for el in a] for i in range(SAMPLE_COUNT)]
+        lines=[[list(el.values())[i] for el in list(sample.values())] for i in range(SAMPLE_COUNT)]
     )
-    return r

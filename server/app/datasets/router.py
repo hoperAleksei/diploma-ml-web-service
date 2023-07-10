@@ -88,3 +88,20 @@ async def get_user_dataset(
             status_code=409,
             detail="User not use dataset"
         )
+
+
+@router.post("/restore", response_model=SampleTable)
+async def restore_user_dataset(
+        current_user: User = Depends(get_current_user)
+):
+    try:
+        state = globals.state[current_user.username]
+        state.dataset = globals.datasets[state.dataset_id].copy()
+
+        return {"status": "ok"}
+
+    except KeyError:
+        raise HTTPException(
+            status_code=409,
+            detail="User not use dataset"
+        )

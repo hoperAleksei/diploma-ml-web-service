@@ -89,4 +89,24 @@ async function uploadDsUrl(token, url) {
     }
 }
 
-export {getDatasets, useDataset, uploadDsFile, uploadDsUrl}
+async function getTable(token) {
+     try {
+        let res = await fetch(API_BASE + 'ds/get_use', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+        let ans = await res.json()
+        if (res.ok) {
+            return {status: true, table: ans}
+        } else {
+            return {status: false, detail: ans.detail}
+        }
+    } catch (e) {
+        console.log(e)
+        return {status: false}
+    }
+}
+
+export {getDatasets, useDataset, uploadDsFile, uploadDsUrl, getTable}

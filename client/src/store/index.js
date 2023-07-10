@@ -2,7 +2,7 @@ import {createStore} from 'vuex'
 import createPersistedState from "vuex-persistedstate";
 import {getAuth, getMe} from "@/api/auth";
 import {createExperiment, deleteExperiment, getState} from "@/api/experiment";
-import {getDatasets, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
+import {getDatasets, getTable, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
 
 function setLogin(context, token, username, role) {
     context.commit('setToken', token)
@@ -111,6 +111,10 @@ export default createStore({
             let res = await uploadDsUrl(context.state.token, url)
             return res
         },
+        async getTable(context) {
+            let res = await getTable(context.state.token)
+            return res
+        }
     },
     // modules: {},
     plugins: [createPersistedState()]
