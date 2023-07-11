@@ -64,13 +64,12 @@ class Algorithm(ABC):
 
     @staticmethod
     def get_alg_requirements(cls):
-
         return {
             'alg_name': cls.ALGORITHM_NAME,
             'requirements': {
-                'NOT_NULL': Algorithm.PreReq.NOT_NULL in cls.PRE_REQ,
-                'NUM': Algorithm.PreReq.NUM in cls.PRE_REQ,
-                'NORM': Algorithm.PreReq.NORM in cls.PRE_REQ
+                'NOT_NULL': Algorithm.PreReq.NOT_NULL.value in Algorithm.get_input_types(cls.PRE_REQ),
+                'NUM': Algorithm.PreReq.NUM.value in Algorithm.get_input_types(cls.PRE_REQ),
+                'NORM': Algorithm.PreReq.NORM.value in Algorithm.get_input_types(cls.PRE_REQ)
             }
         }
 
