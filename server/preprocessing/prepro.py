@@ -69,13 +69,16 @@ def data_param(data: DataFrame) -> list:
     norm = True
     num = True
     not_null = data.isnull().values.any()
+    not_null = not not_null
     for name, values in data.items():
         if (values.dtypes == 'O'):
             num = False
             break
     for name, values in data.items():
         if (values.dtypes != 'O'):
-            if (values.max() > 1 or values.min() < -1):
+            if (values.max() > 2 or values.min() < -2):
+                print(values.min())
+                print("aboa")
                 norm = False
                 break
     return [not_null, num, norm]
@@ -97,7 +100,10 @@ def list_alg(data: DataFrame, alg_req: dict) -> list:
             status = "not"
         if (alg["requirements"]["NORM"] == True and data_par[2] == False):
             status = "not"
-        algs.append({alg["alg_name"]:status})
+        if (status == "ok"):
+            algs.append({alg["alg_name"]:"ok"})
+        if (status == "not"):
+            algs.append({alg["alg_name"]:"not"})
     return alg
 
 def preproc(data_set: DataFrame, pre_types: dict) -> list:
@@ -131,10 +137,9 @@ def preproc(data_set: DataFrame, pre_types: dict) -> list:
                 pf.AttributeLabelEncoder(data_set)
             if ("AttributeOneHotEncoder" == pre_types["ec"]):
                 pf.AttributeOneHotEncoder(data_set)
-                print(data_set)
             if ("AttributeBinaryEncoder" == pre_types["ec"]):
                 pf.AttributeBinaryEncoder(data_set)
-        if "nd" in pre_types.keys():
+        if "nd" in pre_types.keys() and data_param(data_set)[0]:
             if ("NormalizeAttributes" == pre_types["nd"]):
                 pf.NormalizeAttributes(data_set, pre_types["label"])
             if ("MinMaxNormalizeAttributes" == pre_types["nd"]):
