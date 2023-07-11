@@ -16,21 +16,23 @@ class KNN(KNeighborsClassifier, Algorithm):
     INPUT_TYPES = [Algorithm.InputTypes.INT,
                    Algorithm.InputTypes.FLOAT,
                    Algorithm.InputTypes.BOOL]
-    PARAMS = {
-        'n_neighbors': {
+    PARAMS = [
+        {
+            'name': 'n_neighbors',
             'type': 'int',
             'min': '1',
-            'max': '100',
+            'max': '30',
             'decs': 'Количество соседей'
         },
-        'weights': {
+        {
+            'name': 'weights',
             'type': 'set',
             'values': ['uniform', 'distance'],
             'decs': 'Способ голосования'
         }
-    }
+    ]
 
-    def __init__(self, n_neighbors, weights):
+    def __init__(self, n_neighbors=3, weights="uniform"):
         KNeighborsClassifier.__init__(self, n_neighbors=n_neighbors,
                                       weights=weights
                                       )

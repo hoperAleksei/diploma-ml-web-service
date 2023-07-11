@@ -13,7 +13,7 @@ import globals
 def prepr(ds: DataFrame, methods: dict) -> DataFrame:
     d = ds.copy()
     res = preproc(d, methods)
-    res[0].insert(0, "label", res[2])
+    res[0].insert(0, res[1], res[2])
     res = res[0]
     # globals.state[user.username].dataset = res[0].insert(0, "label", res[2])
     return res

@@ -1,7 +1,8 @@
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 
 
-def sample_split(splits: list[dict], dataset) -> dict:
+def sample_split(splits: list[dict], dataset) -> list[dict]:
     """
     :param splits: лист с параметрами разбиения(ts - % разбиения, rs - коэффициент случайности, st - сохранение пропорций класса)
     :param dataset: обработанный датасет
@@ -9,10 +10,10 @@ def sample_split(splits: list[dict], dataset) -> dict:
     """
     n = dataset.shape[1]
     X = dataset.iloc[:, 1:n]
-    Y = dataset.iloc[0]
+    Y = dataset.iloc[:,0]
     res = []
     for sp in splits:
-        if "sz" in sp.keys() and "rs" in sp.keys():
+        if "st" in sp.keys() and "rs" in sp.keys():
             X_train, X_test, Y_train, Y_test = train_test_split(X, Y,
                                                                 test_size=sp["ts"],
                                                                 random_state=sp["rs"],

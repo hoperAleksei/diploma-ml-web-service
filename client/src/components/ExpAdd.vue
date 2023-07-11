@@ -46,7 +46,6 @@ export default {
   methods: {
     async submit(event) {
       await store.dispatch('updateState')
-      console.log(store.state.state)
       if (store.state.state !== 'ready') {
         router.push('/')
       }

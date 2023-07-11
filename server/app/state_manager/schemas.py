@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from enum import Enum
 from pandas import DataFrame
 
+from split.schemas import Split
 
 class State(Enum):
     ready = "ready"  # до задания названия эксперимента
@@ -19,10 +20,6 @@ class Experiment(BaseModel):
 
 class ExperimentInDB(Experiment):
     id: int
-
-
-class Split(BaseModel):
-    pass
 
 
 class Autofit(BaseModel):
