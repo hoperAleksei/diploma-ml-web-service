@@ -14,6 +14,7 @@ from database import Base
 
 from app.auth.models import user
 from app.datasets.models import dataset
+from app.algs.models import requirement, algorithm, alg_req
 # from app.database import metadata
 
 from app.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
@@ -29,7 +30,6 @@ config.set_section_option(section, "DB_USER", DB_USER)
 config.set_section_option(section, "DB_NAME", DB_NAME)
 config.set_section_option(section, "DB_PASS", DB_PASS)
 
-
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -40,6 +40,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
