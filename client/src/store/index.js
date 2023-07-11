@@ -5,7 +5,7 @@ import {createExperiment, deleteExperiment, getState} from "@/api/experiment";
 import {getDatasets, getDsNames, getTable, restoreDs, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
 import {getPre, preCommit, prepro} from "@/api/preproc";
 import {split} from "@/api/split";
-import {getAllAlgs, getAvailable, uploadAlgFile} from "@/api/algs";
+import {getAllAlgs, getAvailable, getToRun, uploadAlgFile} from "@/api/algs";
 
 function setLogin(context, token, username, role) {
     context.commit('setToken', token)
@@ -141,6 +141,9 @@ export default createStore({
         },
         async getAllAlgs(context) {
             return await getAllAlgs(context.state.token)
+        },
+        async getToRun(context) {
+            return await getToRun(context.state.token)
         },
         async uploadAlgFile(context, {file}) {
             return await uploadAlgFile(context.state.token, file)

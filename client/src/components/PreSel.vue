@@ -134,7 +134,6 @@ export default {
 
       const res = await store.dispatch("prepro", {req: req})
       if (res.status) {
-        console.log(this)
         await this.$parent.$parent.$parent.$refs.table.update()
         this.values = []
         this.valuesMu = []

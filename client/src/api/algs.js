@@ -44,5 +44,15 @@ async function getAllAlgs(token) {
     return await res.json()
 }
 
+async function getToRun(token) {
+    let res = await fetch(API_BASE + 'alg/to_run', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    return await res.json()
+}
 
-export {getAvailable, uploadAlgFile, getAllAlgs}
+
+export {getAvailable, uploadAlgFile, getAllAlgs, getToRun}
