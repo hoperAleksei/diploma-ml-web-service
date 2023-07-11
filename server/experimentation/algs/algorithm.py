@@ -64,13 +64,12 @@ class Algorithm(ABC):
 
     @staticmethod
     def get_alg_requirements(cls):
-
         return {
             'alg_name': cls.ALGORITHM_NAME,
             'requirements': {
-                'NOT_NULL': Algorithm.PreReq.NOT_NULL in cls.PRE_REQ,
-                'NUM': Algorithm.PreReq.NUM in cls.PRE_REQ,
-                'NORM': Algorithm.PreReq.NORM in cls.PRE_REQ
+                'NOT_NULL': Algorithm.PreReq.NOT_NULL.value in Algorithm.get_input_types(cls.PRE_REQ),
+                'NUM': Algorithm.PreReq.NUM.value in Algorithm.get_input_types(cls.PRE_REQ),
+                'NORM': Algorithm.PreReq.NORM.value in Algorithm.get_input_types(cls.PRE_REQ)
             }
         }
 
@@ -120,16 +119,16 @@ class Algorithm(ABC):
             output_list.append(i.value)
         return output_list
 
-    def check_input_types(self, x: pd.DataFrame) -> bool:  # возможно переделать под list
-        """
-        Функция проверки типов в X на соответствие типам, которые принимает алгоритм
-        """
-        list_of_types = [str(str_type) for str_type in x.dtypes]
-        for i in list_of_types:
-            if i not in self.get_input_types(self.INPUT_TYPES):
-                return False
-        return True
+    # def check_input_types(self, x: pd.DataFrame) -> bool:  # возможно переделать под list
+    #     """
+    #     Функция проверки типов в X на соответствие типам, которые принимает алгоритм
+    #     """
+    #     list_of_types = [str(str_type) for str_type in x.dtypes]
+    #     for i in list_of_types:
+    #         if i not in self.get_input_types(self.INPUT_TYPES):
+    #             return False
+    #     return True
 
-    @staticmethod
-    def get_params_name(prarams):
-        return list(prarams.keys())
+    # @staticmethod
+    # def get_params_name(prarams):
+    #     return list(prarams.keys())
