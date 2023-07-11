@@ -24,10 +24,11 @@ export default {
       const res = await store.dispatch('getAvailable')
       for (let i in res) {
         const r = res[i]
+        console.log((r.status === 'ok') ? 'red' : 'green')
 
         this.algs.push({
           name: r.name,
-          color: (r.state === 'ok') ? 'red' : 'green'
+          color: (r.status === 'ok') ? 'green' : 'red'
         })
       }
     }
