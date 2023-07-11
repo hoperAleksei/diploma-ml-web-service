@@ -135,6 +135,7 @@ export default {
       const res = await store.dispatch("prepro", {req: req})
       if (res.status) {
         await this.$parent.$parent.$parent.$refs.table.update()
+        await this.$parent.$parent.$parent.$refs.avl.upgrade()
         this.values = []
         this.valuesMu = []
         this.valuesMuMa = []
@@ -156,6 +157,7 @@ export default {
       this.valuesMuMa = []
       await store.dispatch("restoreDs")
       await this.$parent.$parent.$parent.$refs.table.update()
+      await this.$parent.$parent.$parent.$refs.avl.upgrade()
       await this.updateNames()
       await this.updatePres()
     }

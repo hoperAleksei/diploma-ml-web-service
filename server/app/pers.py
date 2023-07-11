@@ -8,6 +8,7 @@ import globals
 PERSISTENCE_PATH = os.path.join(os.path.abspath("."), "persistence")
 DATA_STATE = "data_state"
 DATA_DS = "data_ds"
+RES_DS = "data_res"
 
 
 async def load():
@@ -16,11 +17,13 @@ async def load():
         os.mkdir(PERSISTENCE_PATH)
     else:
         if os.path.exists(os.path.join(PERSISTENCE_PATH, DATA_STATE)) and os.path.exists(
-                os.path.join(PERSISTENCE_PATH, DATA_DS)):
+                os.path.join(PERSISTENCE_PATH, DATA_DS)) and os.path.exists(os.path.join(PERSISTENCE_PATH, RES_DS)):
             with open(os.path.join(PERSISTENCE_PATH, DATA_STATE), "rb") as file:
                 globals.state = pickle.load(file)
             with open(os.path.join(PERSISTENCE_PATH, DATA_DS), "rb") as file:
                 globals.datasets = pickle.load(file)
+            with open(os.path.join(PERSISTENCE_PATH, RES_DS), "rb") as file:
+                globals.results = pickle.load(file)
 
 
 async def save():
@@ -32,3 +35,5 @@ async def save():
             pickle.dump(globals.state, file)
         with open(os.path.join(PERSISTENCE_PATH, DATA_DS), "wb") as file:
             pickle.dump(globals.datasets, file)
+        with open(os.path.join(PERSISTENCE_PATH, RES_DS), "wb") as file:
+            pickle.dump(globals.results, file)

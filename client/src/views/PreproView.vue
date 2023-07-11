@@ -5,7 +5,7 @@
       <v-btn @click="commit" color="green" class="mt-2 align-self-center">Перейти к разбиению</v-btn>
     </v-card>
     <v-card class="w-50">
-      <pre-avl class="w-10 align-self-center"></pre-avl>
+      <pre-avl ref="avl" class="w-10 align-self-center"></pre-avl>
       <table-ds ref="table" class="w-1"></table-ds>
     </v-card>
   </v-card>

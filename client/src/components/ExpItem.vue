@@ -1,29 +1,31 @@
 <template>
-  <v-list-item :key="$props.title">
-    <div @click="openExp">
+  <v-list-item @click="openExp">
+    <div>
       <v-list-item-title>{{ $props.title }}</v-list-item-title>
-      <v-list-item-subtitle>{{ $props.modelCount }} моделей</v-list-item-subtitle>
     </div>
     <template v-slot:append>
-      <v-btn icon @click="deleteExp">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
+<!--      <v-btn icon @click="deleteExp">-->
+<!--        <v-icon>mdi-delete</v-icon>-->
+<!--      </v-btn>-->
     </template>
   </v-list-item>
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   name: 'ExpItem',
   props: {
     title: String,
-    modelCount: Number,
+    id: Number
   },
   methods: {
-    deleteExp(event) {
-      console.log('deleteExp', event)
-    },
+    // deleteExp(event) {
+    //   console.log('deleteExp', event)
+    // },
     openExp(event) {
+      router.push('/result/'+this.id)
       console.log('openExp', event)
     }
   }

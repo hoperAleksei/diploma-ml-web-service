@@ -56,7 +56,6 @@ async function getToRun(token) {
 
 async function runExp(token, algs) {
     try {
-        console.log(123123123123123,algs)
         let res = await fetch(API_BASE + 'alg/run', {
             method: 'POST',
             headers: {
@@ -67,7 +66,7 @@ async function runExp(token, algs) {
         })
         const resp = await res.json()
         if (res.ok && resp.status === 'ok') {
-            return {status: true}
+            return {status: true, id: resp.id}
         } else {
             return {status: false}
         }
@@ -78,5 +77,27 @@ async function runExp(token, algs) {
 
 }
 
+async function getRes(token, id) {
+    let res = await fetch(API_BASE + 'alg/result', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({id: id}),
+    })
+    return await res.json()
+}
 
-export {getAvailable, uploadAlgFile, getAllAlgs, getToRun, runExp}
+async function getExps(token) {
+    let res = await fetch(API_BASE + 'alg/exps', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        },
+    })
+    return await res.json()
+}
+
+
+export {getAvailable, uploadAlgFile, getAllAlgs, getToRun, runExp, getRes, getExps}

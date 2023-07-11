@@ -5,7 +5,7 @@ import {createExperiment, deleteExperiment, getState} from "@/api/experiment";
 import {getDatasets, getDsNames, getTable, restoreDs, uploadDsFile, uploadDsUrl, useDataset} from "@/api/datasets";
 import {getPre, preCommit, prepro} from "@/api/preproc";
 import {split} from "@/api/split";
-import {getAllAlgs, getAvailable, getToRun, runExp, uploadAlgFile} from "@/api/algs";
+import {getAllAlgs, getAvailable, getExps, getRes, getToRun, runExp, uploadAlgFile} from "@/api/algs";
 
 function setLogin(context, token, username, role) {
     context.commit('setToken', token)
@@ -22,7 +22,8 @@ export default createStore({
         token: '',
         state: 'ready',
         expName: '',
-        dataset: null
+        dataset: null,
+        result_id: null,
     }),
     getters: {},
     mutations: {
@@ -46,6 +47,9 @@ export default createStore({
         },
         setDataset(state, id) {
             state.dataset = id
+        },
+        setResId(state, id) {
+            state.result_id = id
         },
     },
     actions: {
@@ -152,7 +156,14 @@ export default createStore({
             const res = await runExp(context.state.token, algs)
             await context.dispatch("updateState")
             return res
-        }
+        },
+        async getRes(context, {id}) {
+            return await getRes(context.state.token, id)
+        },
+        async getExps(context) {
+            return await getExps(context.state.token)
+        },
+
     },
     // modules: {},
     plugins: [createPersistedState()]

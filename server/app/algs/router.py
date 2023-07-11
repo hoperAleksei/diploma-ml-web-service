@@ -5,6 +5,7 @@ from fastapi import File, UploadFile
 
 from auth.schemas import User
 from auth.security import get_current_user
+from pydantic import BaseModel
 from sklearn.datasets import load_iris
 
 from split.schemas import Split
@@ -49,7 +50,10 @@ async def get_available(
         state = globals.state[current_user.username]
         ds = state.dataset
 
+        print(get_all_algs_req())
+
         res = list_alg(ds, get_all_algs_req())
+        print(res)
 
         return [{"name": list(r.keys())[0], "status": list(r.values())[0]} for r in res]
 
@@ -68,7 +72,10 @@ async def get_to_run(
         state = globals.state[current_user.username]
         ds = state.dataset
 
-        res = get_all_alg([list(a.keys())[0] for a in list_alg(ds, get_all_algs_req())])
+        a = [list(a.keys())[0] for a in list_alg(ds, get_all_algs_req()) if list(a.values())[0] == 'ok']
+        print("===============", a)
+
+        res = get_all_alg(a)
 
         return res
 
@@ -84,15 +91,18 @@ async def run_experiment(
         autofit_params: list[ExperimentResultInput],
         current_user: User = Depends(get_current_user)
 ):
-    state = globals.state[current_user.username]
+    username = current_user.username
+    state = globals.state[username]
     ds = state.dataset
     exp_name = state.name
     splits_params = state.splits
 
     sp = []
+    spp = []
 
     for s in splits_params:
         tmp = s.model_dump(exclude_none=True, exclude_unset=True)
+        spp.append(tmp)
         tmp["st"] = None
 
         sp.append(tmp)
@@ -101,8 +111,39 @@ async def run_experiment(
 
     ress = []
 
-    for s in splits:
-        ress.append(run_experiments(autofit_params, s["trainX"], s["trainY"], s["testX"], s["testY"]))
+    for (i, s) in enumerate(splits):
+        ress.append(
+            {"name": exp_name, "split": spp[i], "exps": run_experiments(autofit_params, s["trainX"], s["trainY"], s["testX"], s["testY"])})
 
-    print(ress)
+    if username not in globals.results.keys():
+        globals.results[username] = [ress]
+        idd = 0
+    else:
+        globals.results[username].append(ress)
+        idd = len(globals.results[username]) - 1
 
+    globals.state.pop(username, None)
+    print(globals.results[username])
+
+    return {"status": "ok", "id": idd}
+
+@router.get("/exps")
+async def get_experiments(
+        current_user: User = Depends(get_current_user)
+):
+    results = globals.results[current_user.username]
+    # print([{"id": i, "name": v[0]["name"]} for i, v in enumerate(results)])
+    return [{"id": i, "name": v[0]["name"]} for i, v in enumerate(results)]
+    # return {"id": i, "name": name
+
+
+class Idd(BaseModel):
+    id: int
+
+
+@router.post("/result")
+async def run_experiment(
+        idd: Idd,
+        current_user: User = Depends(get_current_user)
+):
+    return globals.results[current_user.username][idd.id]
