@@ -1,6 +1,4 @@
 <template>
-  <!--  {{ algs }}-->
-  {{ res }}
   <v-form @submit.prevent="submit" class="pa-2 ma-2">
     <v-card v-for="(alg, i) in algs" class="d-flex overflow-visible ma-2 pa-2">
       <v-card :title="alg.name" class="d-flex flex-column  flex-1-1 w-70 overflow-visible">
@@ -60,6 +58,7 @@
 
 <script>
 import store from "@/store";
+import router from "@/router";
 
 export default {
   name: 'AutofitView',
@@ -90,6 +89,7 @@ export default {
               max: p.value[1],
             })
           } else {
+            console.log("loxsosi", p.value)
             pr.push({
               name: p.name,
               type: alg.params[j].type,
@@ -103,8 +103,17 @@ export default {
           params: pr
         })
       }
-
       console.log(req)
+
+      const res = await store.dispatch('runExp', {algs: req})
+
+      if (res) {
+        await store.dispatch('updateState')
+        router.push('/')
+      }
+      else {
+        console.log("error")
+      }
 
       this.loading = false
     },
@@ -116,10 +125,19 @@ export default {
         let p = []
         for (let j in a.params) {
           let pp = a.params[j]
-          p.push({
-            name: pp.name,
-            value: [pp.min, pp.max]
-          })
+          if (pp.type === 'set') {
+                        p.push({
+              name: pp.name,
+              value: [...pp.values]
+            })
+          }
+          else {
+
+            p.push({
+              name: pp.name,
+              value: [pp.min, pp.max]
+            })
+          }
         }
         this.res.push({
           name: a.name,
@@ -134,6 +152,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
 </style>

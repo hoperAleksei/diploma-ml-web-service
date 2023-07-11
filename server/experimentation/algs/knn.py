@@ -21,7 +21,7 @@ class KNN(KNeighborsClassifier, Algorithm):
             'name': 'n_neighbors',
             'type': 'int',
             'min': '1',
-            'max': '100',
+            'max': '30',
             'decs': 'Количество соседей'
         },
         {

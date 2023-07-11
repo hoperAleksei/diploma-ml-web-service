@@ -1,3 +1,5 @@
+from enum import Enum
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi import File, UploadFile
 
@@ -5,8 +7,10 @@ from auth.schemas import User
 from auth.security import get_current_user
 from sklearn.datasets import load_iris
 
+from split.schemas import Split
+
 from .schemas import ExperimentResultInput, ExperimentResultOutput, ParseOut, Param
-from .algo import get_all_alg, loadAlg, run_experiments, create_alg, get_algs, list_alg, get_all_algs_req
+from .algo import get_all_alg, loadAlg, run_experiments, create_alg, get_algs, list_alg, get_all_algs_req, sample_split
 
 import globals
 
@@ -75,11 +79,30 @@ async def get_to_run(
         )
 
 
-@router.get("test")
-async def get_test():
-    ...
-    # iris = load_iris()
-    # return run_experiments([ExperimentResultInput(alg_name='k-nearest neighbors', n_steps=3,
-    #                                              params=[Param(name="n_neighbors", type="int", min=1, max=2),
-    #                                                      Param(name="weights", type="set", values=["uniform"])])], iris.data,
-    #                        iris.target, iris.data, iris.target)
+@router.post("/run")
+async def run_experiment(
+        autofit_params: list[ExperimentResultInput],
+        current_user: User = Depends(get_current_user)
+):
+    state = globals.state[current_user.username]
+    ds = state.dataset
+    exp_name = state.name
+    splits_params = state.splits
+
+    sp = []
+
+    for s in splits_params:
+        tmp = s.model_dump(exclude_none=True, exclude_unset=True)
+        tmp["st"] = None
+
+        sp.append(tmp)
+
+    splits = sample_split(sp, ds)
+
+    ress = []
+
+    for s in splits:
+        ress.append(run_experiments(autofit_params, s["trainX"], s["trainY"], s["testX"], s["testY"]))
+
+    print(ress)
+
