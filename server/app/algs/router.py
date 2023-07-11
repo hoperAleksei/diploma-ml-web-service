@@ -56,6 +56,25 @@ async def get_available(
         )
 
 
+@router.get("/to_run")
+async def get_to_run(
+        current_user: User = Depends(get_current_user)
+):
+    try:
+        state = globals.state[current_user.username]
+        ds = state.dataset
+
+        res = get_all_alg([list(a.keys())[0] for a in list_alg(ds, get_all_algs_req())])
+
+        return res
+
+    except KeyError:
+        return HTTPException(
+            400,
+            detail="not correct"
+        )
+
+
 @router.get("test")
 async def get_test():
     ...
