@@ -45,7 +45,9 @@ async def get_available(
         state = globals.state[current_user.username]
         ds = state.dataset
 
-        return list_alg(ds, get_all_algs_req())
+        res = list_alg(ds, get_all_algs_req())
+
+        return [{"name": list(r.keys())[0], "status": list(r.values())[0]} for r in res]
 
     except KeyError:
         return HTTPException(

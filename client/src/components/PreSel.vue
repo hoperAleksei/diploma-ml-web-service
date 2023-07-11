@@ -1,6 +1,6 @@
 <template>
   <v-form ref="form" @submit.prevent="submit">
-    <v-card max-width="600" class="d-flex flex-row flex-wrap ma-5">
+    <v-card max-width="600" class="d-flex flex-row flex-wrap mx-auto">
 
       <!--      <v-container>-->
       <v-select v-model="values[i]"
@@ -134,7 +134,8 @@ export default {
 
       const res = await store.dispatch("prepro", {req: req})
       if (res.status) {
-        await this.$parent.$refs.table.update()
+        console.log(this.$parent.$parent.$refs.table.$refs)
+        await this.$parent.$parent.$refs.table.update()
         this.values = []
         this.valuesMu = []
         this.valuesMuMa = []
