@@ -64,15 +64,16 @@ async def validation_exception_handler(request: Request, exc: ValidationError):
 @app.get("/api/get_all")
 async def get_all():
     # return  globals.state
-    return [
+    return {"state":[
         {u: {"state": s.state, "name": s.name, "dataset_id": s.dataset_id, "splits": s.splits, "autofit": s.autofit}}
-        for u, s in globals.state.items()]
+        for u, s in globals.state.items()], "res": globals.results}
 
 
-@app.post("/api/drop_all")
-async def get_all():
+@app.delete("/api/drop_all")
+async def drop_all():
     globals.state = {}
     globals.datasets = {}
+    globals.results = {}
 
 
 # {"state": s.state, "name": s.name, "dataset_id": s.dataset_id, "splits": s.splits, "autofit": s.autofit}

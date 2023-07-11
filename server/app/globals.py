@@ -7,4 +7,4 @@ datasets: Dict[int, DataFrame] = {}
 
 state: Dict[str, UserState] = {}
 
-results: Dict[str, [UserState]] = {}
+results: Dict = {}

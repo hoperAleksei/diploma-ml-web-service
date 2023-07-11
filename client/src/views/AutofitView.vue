@@ -107,9 +107,9 @@ export default {
 
       const res = await store.dispatch('runExp', {algs: req})
 
-      if (res) {
+      if (res.status) {
         await store.dispatch('updateState')
-        router.push('/')
+        router.push('/result/'+res.id)
       }
       else {
         console.log("error")
