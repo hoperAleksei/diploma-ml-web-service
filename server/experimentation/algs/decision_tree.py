@@ -13,8 +13,7 @@ class tree(DecisionTreeClassifier, Algorithm):
 
     INPUT_TYPES = [Algorithm.InputTypes.INT,
                    Algorithm.InputTypes.FLOAT,
-                   Algorithm.InputTypes.BOOL,
-                   Algorithm.InputTypes.STRING]
+                   Algorithm.InputTypes.BOOL]
     PARAMS = [
         {
             'name': 'max_depth',

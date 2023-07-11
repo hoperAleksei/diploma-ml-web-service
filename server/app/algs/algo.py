@@ -2,8 +2,10 @@ import os
 
 import aiofiles
 from external import experimentation
+from external import preprocessing
 
 import external
+
 from fastapi import UploadFile, HTTPException
 
 from sqlalchemy import insert, select
@@ -17,6 +19,8 @@ algs_loader = external.experimentation.algs_loader
 get_all_algs_req = external.experimentation.get_all_algs_req
 get_all_alg = external.experimentation.get_all_alg
 parse = external.experimentation.parse
+
+list_alg = external.preprocessing.list_alg
 
 TEST_PATH = os.path.join(os.path.abspath("."), "experimentation", "test")
 ALGS_PATH = os.path.join(os.path.abspath("."), "experimentation", "algs")
@@ -52,6 +56,12 @@ async def create_alg(name: str, desc: str, pres: list[str]):
             await session.commit()
         except Exception as e:
             raise HTTPException(400, detail="db Error")
+
+async def get_algs():
+    query = select(algorithm)
+    async with async_session_maker() as session:
+        result = await session.execute(query)
+    return [x._mapping for x in result.all()]
 
 
 async def loadAlg(file: UploadFile):
