@@ -1,6 +1,6 @@
 from pandas import DataFrame
 from preprocessing import preprocessing_functions as pf
-
+from preprocessing import analytic_function as af
 PRE_TYPES = [{
     "type": "op",
     "name": "Обработка пропусков",
@@ -60,6 +60,42 @@ PRE_TYPES = [{
 }
 ]
 
+Analyt = [{
+    "type": "cc",
+    "name": "Количество классов",
+},
+{
+    "type": "ad",
+    "name": "Распределение классов",
+},
+{
+    "type": "ch",
+    "name": "Тепловая карта корреляции",
+},
+{
+    "type": "mc",
+    "name": "Количество пропущенных значений",
+},
+{
+    "type": "dt",
+    "name": "Типы данных",
+},
+]
+#analytic(data_set,"death", {"cc":"yes", "ad":"yes", "ch": "yes", "mc":"yes", "dt":"yes"})
+def analytic(data: DataFrame, labelname: str, analytic_types: dict) -> list:
+    result = []
+    if (analytic_types["cc"] == "yes"):
+        result.append({"Количество классов":(af.class_count(data[labelname]))})
+    if (analytic_types["ad"] == "yes"):
+        result.append({"Распределение классов":(af.class_distribution(data[labelname]))})
+    if (analytic_types["ch"] == "yes"):
+        result.append({"Тепловая карта корреляции":(af.correlation_hotmap(data))})
+    if (analytic_types["mc"] == "yes"):
+        result.append({"Количество пропущенных значений":(af.miss_values_count(data))})
+    if (analytic_types["dt"] == "yes"):
+        result.append({"Типы данных":(af.data_types(data))})
+    return result
+
 #Проверяет параметры датафрейма
 def data_param(data: DataFrame) -> list:
     """
@@ -77,8 +113,6 @@ def data_param(data: DataFrame) -> list:
     for name, values in data.items():
         if (values.dtypes != 'O'):
             if (values.max() > 2 or values.min() < -2):
-                print(values.min())
-                print("aboa")
                 norm = False
                 break
     return [not_null, num, norm]
@@ -105,6 +139,7 @@ def list_alg(data: DataFrame, alg_req: dict) -> list:
         if (status == "not"):
             algs.append({alg["alg_name"]:"not"})
     return alg
+
 
 def preproc(data_set: DataFrame, pre_types: dict) -> list:
     """

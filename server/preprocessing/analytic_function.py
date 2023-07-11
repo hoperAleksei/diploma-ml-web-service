@@ -11,7 +11,7 @@ def class_count(label: pd.Series) -> dict:
     """
     return label.value_counts().to_dict()
 
-def atribute_distribution(atribute: pd.Series) -> plt.hist:
+def class_distribution(atribute: pd.Series) -> plt.hist:
     """"
     :param atribute: Series с параметром
     :return: plt.hist
