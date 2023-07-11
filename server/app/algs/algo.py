@@ -78,12 +78,15 @@ async def loadAlg(file: UploadFile):
     ans = parse(alg_name)
 
     if ans.status:
-        await create_alg(name=ans.name, desc=ans.desc, pres=ans.pre)
+        try:
+            await create_alg(name=ans.name, desc=ans.desc, pres=ans.pre)
 
-        file.file.seek(0)
-        async with aiofiles.open(alg_file_path, "wb") as out:
-            inp = file.file.read()
-            await out.write(inp)
+            file.file.seek(0)
+            async with aiofiles.open(alg_file_path, "wb") as out:
+                inp = file.file.read()
+                await out.write(inp)
+        except Exception:
+            raise HTTPException(409, detail="File already exist")
 
         os.remove(test_file_path)
     else:

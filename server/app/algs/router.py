@@ -27,7 +27,7 @@ async def alg_upload(
     if res:
         return {"status": "ok"}
     else:
-        HTTPException(400, "Something went wrong")
+        HTTPException(400, detail="Something went wrong")
 
 
 @router.get("")
