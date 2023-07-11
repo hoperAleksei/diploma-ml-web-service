@@ -134,8 +134,8 @@ export default {
 
       const res = await store.dispatch("prepro", {req: req})
       if (res.status) {
-        console.log(this.$parent.$parent.$refs.table.$refs)
-        await this.$parent.$parent.$refs.table.update()
+        console.log(this)
+        await this.$parent.$parent.$parent.$refs.table.update()
         this.values = []
         this.valuesMu = []
         this.valuesMuMa = []
@@ -156,14 +156,14 @@ export default {
       this.valuesMu = []
       this.valuesMuMa = []
       await store.dispatch("restoreDs")
-      await this.$parent.$refs.table.update()
+      await this.$parent.$parent.$parent.$refs.table.update()
       await this.updateNames()
       await this.updatePres()
     }
   },
-  mounted() {
-    this.updateNames()
-    this.updatePres()
+  async mounted() {
+    await this.updateNames()
+    await this.updatePres()
   }
 }
 </script>

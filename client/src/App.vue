@@ -20,7 +20,7 @@
     <v-toolbar app v-if="isAuth" color="orange">
       <v-app-bar-nav-icon class="d-flex d-sm-none" @click="sidebar = !sidebar"></v-app-bar-nav-icon>
       <v-toolbar-title>
-        <router-link to="/">
+        <router-link to="/" class="head-text">
           {{ mainName }}
         </router-link>
         <v-btn v-if="mainName !== 'Эксперименты'" density="compact" icon="mdi-close" @click="cancelExp"></v-btn>
@@ -101,5 +101,10 @@ export default {
 
 
 <style>
-
+.head-text{
+font-family: "Roboto", sans-serif;
+  text-decoration: none;
+  color: black;
+  outline: none;
+}
 </style>
